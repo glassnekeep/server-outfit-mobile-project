@@ -1,11 +1,6 @@
-package com.server.database
+package com.server.database.tables
 
 import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.Table.Dual.autoIncrement
-import org.jetbrains.exposed.sql.Table.Dual.hashCode
-import org.jetbrains.exposed.sql.Table.Dual.integer
-import org.jetbrains.exposed.sql.Table.Dual.varchar
-import org.jetbrains.exposed.sql.Table.PrimaryKey
 
 object UserTable: Table("UserTable") {
     val id = integer("id").autoIncrement()

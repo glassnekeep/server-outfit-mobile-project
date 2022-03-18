@@ -1,9 +1,8 @@
-package com.server.database
+package com.server.database.daoInterface
 
 import com.server.models.User
 
-interface UserDAOInterface {
-    fun init()
+interface UserDAOInterface: BaseDaoInterface {
     fun createUser(user: User)
     fun updateUser(user: User)
     fun deleteUser(user: User)
