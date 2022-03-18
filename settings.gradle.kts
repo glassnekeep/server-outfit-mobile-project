@@ -1,0 +1,1 @@
+rootProject.name = "server-outfit-mobile-project"
