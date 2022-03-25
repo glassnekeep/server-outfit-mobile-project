@@ -58,3 +58,13 @@ object UserTable: Table("users") {
     val height = integer("height")
     override val primaryKey: PrimaryKey = PrimaryKey(email, name = "EMAIL")
 }
+
+object ExerciseToProgramTable: Table("exercise_to_program") {
+    val exerciseId = integer("exercise_id")
+    val programId = integer("program_id")
+}
+
+object ProgramToUserTable: Table("program_to_user") {
+    val programId = integer("program_id")
+    val userId = integer("user_id")
+}
