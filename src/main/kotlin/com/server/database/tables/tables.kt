@@ -18,6 +18,7 @@ object Exercise: Table("exercises") {
     val weight = integer("weight")
     //TODO тут может быть как стринга - ссылка на картинку в интернете, так и сама картинка как ресурс
     val image = blob("image")
+    override val primaryKey: PrimaryKey = PrimaryKey(id, name = "ID")
 }
 
 object Progress: Table("progress") {
@@ -51,20 +52,20 @@ object UserTable: Table("users") {
     val lastname = varchar("lastname", 50)
     val phoneNumberL = varchar("phone_number", 30)
     //TODO Разобратьяс как быть с ункиальным индексами
-    val email = varchar("email", 100).uniqueIndex()
+    val email = varchar("email", 100).uniqueIndex().foreignKey
     val password = varchar("password", 50)
     val sex = varchar("sex", 30)
     val growth = integer("growth")
     val height = integer("height")
-    override val primaryKey: PrimaryKey = PrimaryKey(email, name = "EMAIL")
+    override val primaryKey: PrimaryKey = PrimaryKey(id, name = "EMAIL")
 }
 
 object ExerciseToProgramTable: Table("exercise_to_program") {
-    val exerciseId = integer("exercise_id")
-    val programId = integer("program_id")
+    val exerciseId = reference("exercise_id", Exercise.id)
+    val programId = reference("program_id", Program.id)
 }
 
 object ProgramToUserTable: Table("program_to_user") {
-    val programId = integer("program_id")
-    val userId = integer("user_id")
+    val programId = reference("program_id", Program.id)
+    val userId = reference("user_id", UserTable.id)
 }

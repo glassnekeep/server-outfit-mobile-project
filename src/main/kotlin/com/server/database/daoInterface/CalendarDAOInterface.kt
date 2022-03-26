@@ -6,5 +6,4 @@ interface CalendarDAOInterface {
     fun createCalendar(calendar: Calendar)
     fun updateCalendar(calendar: Calendar)
     fun deleteCalendar(calendar: Calendar)
-    fun
 }
