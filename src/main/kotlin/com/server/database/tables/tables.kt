@@ -50,10 +50,10 @@ object UserTable: Table("users") {
     val username = varchar("username", 50)
     val firstName = varchar("firstname", 50)
     val lastname = varchar("lastname", 50)
-    val phoneNumberL = varchar("phone_number", 30)
+    val phoneNumber = varchar("phone_number", 30).uniqueIndex()
     //TODO Разобратьяс как быть с ункиальным индексами
     val email = varchar("email", 100).uniqueIndex().foreignKey
-    val password = varchar("password", 50)
+    val password = text("password")
     val sex = varchar("sex", 30)
     val growth = integer("growth")
     val height = integer("height")
