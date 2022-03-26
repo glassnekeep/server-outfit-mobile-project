@@ -30,8 +30,8 @@ interface UserDAOInterface {
     fun deleterUserWithEmail(email: String)
     fun deleterUserWithUsername(username: String)
     fun deleteUserWithPhoneNumber(phoneNumber: String)
-    fun getUserWithId(id: Int) : User
-    fun getUserWithEmail(email: String) : User
-    fun getUserWithUsername(username: String) : User
-    fun getUserWithPhoneNumber(phoneNumber: String) : User
+    fun getUserWithId(id: Int) : User?
+    fun getUserWithEmail(email: String) : User?
+    fun getUserWithUsername(username: String) : User?
+    fun getUserWithPhoneNumber(phoneNumber: String) : User?
 }
