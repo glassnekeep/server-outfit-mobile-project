@@ -23,6 +23,7 @@ repositories {
 }
 
 dependencies {
+    implementation ("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
     implementation("io.ktor:ktor-server-core:$ktor_version")
     implementation("io.ktor:ktor-auth:$ktor_version")
     implementation("io.ktor:ktor-serialization:$ktor_version")

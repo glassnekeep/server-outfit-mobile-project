@@ -1,7 +1,5 @@
 package com.server.database.tables
 import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.javatime.date
-import org.jetbrains.exposed.sql.javatime.time
 
 object ProgramTable: Table("programs") {
     val id = integer("id").autoIncrement()
@@ -12,7 +10,7 @@ object ProgramTable: Table("programs") {
 
 object ExerciseTable: Table("exercises") {
     val id = integer("id").autoIncrement()
-    val time = time("time")
+    val time = integer("time")
     val numberOfApproaches = integer("number_of_approaches")
     val periods = integer("periods")
     val weight = integer("weight")
@@ -38,8 +36,8 @@ object SettingsTable: Table("settings") {
 
 object CalendarTable: Table("calendar") {
     val id = integer("id").autoIncrement()
-    val date = date("date")
-    val exercise = integer("exercise_id")
+    val date = text("date")
+    //val exercise = integer("exercise_id")
     val program = integer("program_id")
     val user = integer("user_id")
     override val primaryKey: PrimaryKey = PrimaryKey(id, name = "ID")
