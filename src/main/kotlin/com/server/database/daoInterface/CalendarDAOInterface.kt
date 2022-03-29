@@ -17,6 +17,6 @@ interface CalendarDAOInterface {
         user: User
     )
     fun deleteCalendar(id: Int)
-    fun getCalendarWithId(id: Int) : Calendar
-    fun getCalendarListWithUser(userId: Int) : List<Calendar>
+    fun getCalendarWithId(id: Int) : Calendar?
+    fun getCalendarListWithUser(userId: Int) : List<Calendar>?
 }

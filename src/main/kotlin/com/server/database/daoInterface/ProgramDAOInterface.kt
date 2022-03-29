@@ -7,17 +7,20 @@ import com.server.models.User
 interface ProgramDAOInterface {
     fun createProgram(
         interval: Int,
-        exercise: List<Exercise>,
+        exercises: List<Exercise>,
         users: List<User>
     )
+    fun createEmptyProgram(interval: Int)
     fun updateProgram(
         id: Int,
         interval: Int,
-        exercise: List<Exercise>,
+        exercises: List<Exercise>,
         users: List<User>
     )
     fun deleteProgram(id: Int)
-    fun getProgramWithId(id: Int) : Program
-    fun getProgramListWithUser(user: User) : List<Program>
-    fun getUserListWithProgram(program: Program) : List<User>
+    fun getProgramWithId(id: Int) : Program?
+    fun getProgramListWithUser(user: User) : List<Program>?
+    fun getUserListWithProgram(program: Program) : List<User>?
+    fun addUserToProgramConnection(program: Program, userId: Int)
+    fun addExerciseToProgram(exercise: Exercise, programId: Int)
 }

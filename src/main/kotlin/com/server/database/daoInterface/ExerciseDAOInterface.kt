@@ -13,13 +13,13 @@ interface ExerciseDAOInterface {
     )
     fun updateExercise(
         id: Int,
-        time: String,
+        time: Int,
         numberOfApproaches: Int,
         periods: Int,
         weight: Int,
         image: String
     )
     fun deleteExercise(id: Int)
-    fun getExercise(id: Int) : Exercise
-    fun getExerciseListWIthProgram(program: Program) : List<Exercise>
+    fun getExercise(id: Int) : Exercise?
+    fun getExerciseListWIthProgram(program: Program) : List<Exercise>?
 }

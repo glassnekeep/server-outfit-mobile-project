@@ -4,6 +4,7 @@ import com.server.database.daoInterface.*
 import com.server.database.tables.*
 import com.server.models.*
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.javatime.date
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -145,15 +146,46 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
         }.singleOrNull()
     }
 
-    override fun createProgram(interval: Int, exercise: List<Exercise>, users: List<User>) = transaction(db) {
-        ProgramTable.insert {
-            it[ProgramTable.interval] = interval
+    override fun addUserToProgramConnection(programId: Int, user: User) = transaction(db) {
+        ProgramToUserTable.insert {
+            it[ProgramToUserTable.programId] = programId
+            it[ProgramToUserTable.userId] = user.id
         }
         Unit
     }
 
-    override fun updateProgram(id: Int, interval: Int, exercise: List<Exercise>, users: List<User>) = transaction(db) {
-        TODO("Not yet implemented")
+    override fun addExerciseToProgram(exercise: Exercise, programId: Int) = transaction(db) {
+        ExerciseToProgramTable.insert {
+            it[ExerciseToProgramTable.exerciseId] = exercise.id
+            it[ExerciseToProgramTable.programId] = programId
+        }
+        Unit
+    }
+
+    override fun createProgram(interval: Int, exercises: List<Exercise>, users: List<User>) = transaction(db) {
+        val id = ProgramTable.insertAndGetId {
+            it[ProgramTable.interval] = interval
+        }.value
+        exercises.forEach { value ->
+            addExerciseToProgram(value, id)
+        }
+        users.forEach { user ->
+            addUserToProgramConnection(id, user)
+        }
+    }
+
+    override fun createEmptyProgram(interval: Int) {
+        ProgramTable.insert {
+            it[ProgramTable.interval] = interval
+        }
+    }
+
+    override fun updateProgram(id: Int, interval: Int, exercises: List<Exercise>, users: List<User>) = transaction(db) {
+        ProgramTable.update({ ProgramTable.id eq id }) {
+            it[ProgramTable.interval] = interval
+            getExerciseListWIthProgram()
+        }
+        Unit
     }
 
     override fun deleteProgram(id: Int) = transaction(db) {
@@ -172,14 +204,43 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
         TODO("Not yet implemented")
     }
 
-    private fun createCalendarWithRow(row: ResultRow) : Calendar = transaction(db) {
+    private fun createCalendarWithRow(row: ResultRow) : Calendar {
         val program = getProgramWithId(row[CalendarTable.program])
         val user = getUserWithId(row[CalendarTable.user])
         return Calendar(
-            row[CalendarTable.id],
+            row[CalendarTable.id].value,
             row[CalendarTable.date],
             program,
             user!!
+        )
+    }
+
+    private fun createExerciseWithRow(row: ResultRow) : Exercise {
+        return Exercise(
+            row[ExerciseTable.id],
+            row[ExerciseTable.time],
+            row[ExerciseTable.numberOfApproaches],
+            row[ExerciseTable.periods],
+            row[ExerciseTable.weight],
+            row[ExerciseTable.image]
+        )
+    }
+
+    private fun createProgressWihRow(row: ResultRow) : Progress {
+        return Progress(
+            row[ProgressTable.id],
+            getProgramWithId(row[ProgressTable.programId]),
+            getUserWithId(row[ProgressTable.userId])!!,
+            row[ProgressTable.currentExercise]
+        )
+    }
+
+    private fun createSettingsWithRow(row: ResultRow) : Settings {
+        return Settings(
+            row[SettingsTable.id],
+            getUserWithId(row[SettingsTable.userId])!!,
+            row[SettingsTable.restTime],
+            row[SettingsTable.countDownTime]
         )
     }
 
@@ -194,7 +255,7 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
 
     override fun updateCalendar(id: Int, date: String, program: Program, user: User) = transaction(db) {
         CalendarTable.update({ CalendarTable.id eq id }) {
-            it[CalendarTable.date] = date(date)
+            it[CalendarTable.date] = date
             it[CalendarTable.program] = program.id
             it[CalendarTable.user] = user.id
         }
@@ -205,25 +266,22 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
         CalendarTable.deleteWhere {
             CalendarTable.id eq id
         }
+        Unit
     }
 
-    override fun getCalendarWithId(id: Int): Calendar = transaction(db) {
-        CalendarTable.select { CalendarTable.id eq id } {
-
-        }
-
+    override fun getCalendarWithId(id: Int): Calendar? = transaction(db) {
+        CalendarTable.select { CalendarTable.id eq id }.map {
+            createCalendarWithRow(it)
+        }.singleOrNull()
     }
 
     override fun getCalendarListWithUser(userId: Int): List<Calendar> = transaction(db) {
-        TODO("Not yet implemented")
+        CalendarTable.select { CalendarTable.user eq userId }.map {
+            createCalendarWithRow(it)
+        }
     }
 
-    override fun createExercise(time: String, numberOfApproaches: Int, periods: Int, weight: Int, image: String) = transaction(db) {
-        TODO("Not yet implemented")
-    }
-
-    override fun updateExercise(
-        id: Int,
+    override fun createExercise(
         time: String,
         numberOfApproaches: Int,
         periods: Int,
@@ -233,59 +291,117 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
         TODO("Not yet implemented")
     }
 
+    override fun updateExercise(
+        id: Int,
+        time: Int,
+        numberOfApproaches: Int,
+        periods: Int,
+        weight: Int,
+        image: String
+    ) = transaction(db) {
+        ExerciseTable.update({ ExerciseTable.id eq id }) {
+            it[ExerciseTable.id] = id
+            it[ExerciseTable.time] = time
+            it[ExerciseTable.numberOfApproaches] = numberOfApproaches
+            it[ExerciseTable.periods] = periods
+            it[ExerciseTable.weight] = weight
+            it[ExerciseTable.image] = image
+        }
+        Unit
+    }
+
     override fun deleteExercise(id: Int) = transaction(db) {
-        TODO("Not yet implemented")
+        ExerciseTable.deleteWhere { ExerciseTable.id eq id }
+        Unit
     }
 
-    override fun getExercise(id: Int): Exercise = transaction(db) {
-        TODO("Not yet implemented")
+    override fun getExercise(id: Int): Exercise? = transaction(db) {
+        ExerciseTable.select { ExerciseTable.id eq id }.map {
+            createExerciseWithRow(it)
+        }.singleOrNull()
     }
 
-    override fun getExerciseListWIthProgram(program: Program): List<Exercise> = transaction(db) {
-        TODO("Not yet implemented")
+    override fun getExerciseListWIthProgram(program: Program): List<Exercise>? = transaction(db) {
+        ExerciseTable.innerJoin(ExerciseToProgramTable).innerJoin(ProgramTable).slice(ProgramTable.columns).select {
+            ProgramTable.id eq program.id
+        }.map {
+            createExerciseWithRow(it)
+        }
+        //TODO Тут надо обработать ошибки при получении из бд null
     }
 
     override fun createProgress(program: Program, user: User, currentExercise: Int) = transaction(db) {
-        TODO("Not yet implemented")
+        ProgressTable.insert {
+            it[ProgressTable.programId] = program.id
+            it[ProgressTable.userId] = user.id
+            it[ProgressTable.currentExercise] = currentExercise
+        }
+        Unit
     }
 
     override fun updateProgress(id: Int, program: Program, user: User, currentExercise: Int) = transaction(db) {
-        TODO("Not yet implemented")
+        ProgressTable.update ({ ProgressTable.id eq id }) {
+            it[ProgressTable.programId] = program.id
+            it[ProgressTable.userId] = user.id
+            it[ProgressTable.currentExercise] = currentExercise
+        }
+        Unit
     }
 
     override fun deleteProgress(id: Int) = transaction(db) {
-        TODO("Not yet implemented")
+        ProgressTable.deleteWhere { ProgressTable.id eq id }
+        Unit
     }
 
-    override fun getProgressWithId(id: Int): Progress = transaction(db) {
-        TODO("Not yet implemented")
+    override fun getProgressWithId(id: Int): Progress? = transaction(db) {
+        ProgressTable.select { ProgressTable.id eq id }.map {
+            createProgressWihRow(it)
+        }.singleOrNull()
     }
 
-    override fun getProgressWithUserAndProgram(user: User, program: Program): Progress = transaction(db) {
-        TODO("Not yet implemented")
+    override fun getProgressWithUserAndProgram(user: User, program: Program): Progress? = transaction(db) {
+        ProgressTable.select { ProgressTable.userId eq user.id and ProgressTable.programId eq program.id }.map {
+            createProgressWihRow(it)
+        }.singleOrNull()
     }
 
     override fun createSettings(user: User, restTime: Int, countDownTime: Int) = transaction(db) {
-        TODO("Not yet implemented")
+        SettingsTable.insert {
+            it[SettingsTable.userId] = user.id
+            it[SettingsTable.restTime] = restTime
+            it[SettingsTable.countDownTime] = countDownTime
+        }
+        Unit
     }
 
     override fun updateSettings(id: Int, user: User, restTime: Int, countDownTime: Int) = transaction(db) {
-        TODO("Not yet implemented")
+        SettingsTable.update({ SettingsTable.id eq id }) {
+            it[SettingsTable.userId] = user.id
+            it[SettingsTable.restTime] = restTime
+            it[SettingsTable.countDownTime] = countDownTime
+        }
+        Unit
     }
 
     override fun deleteSettingsWithId(id: Int) = transaction(db) {
-        TODO("Not yet implemented")
+        SettingsTable.deleteWhere { SettingsTable.id eq id }
+        Unit
     }
 
     override fun deleteSettingsWithUser(user: User) = transaction(db) {
-        TODO("Not yet implemented")
+        SettingsTable.deleteWhere { SettingsTable.userId eq user.id }
+        Unit
     }
 
-    override fun getSettingsWithUser(user: User): Settings = transaction(db) {
-        TODO("Not yet implemented")
+    override fun getSettingsWithUser(user: User): Settings? = transaction(db) {
+        SettingsTable.select { SettingsTable.userId eq user.id }.map {
+            createSettingsWithRow(it)
+        }.singleOrNull()
     }
 
-    override fun getSettingsWithId(id: Int): Settings = transaction(db) {
-        TODO("Not yet implemented")
+    override fun getSettingsWithId(id: Int): Settings? = transaction(db) {
+        SettingsTable.select { SettingsTable.id eq id }.map {
+            createSettingsWithRow(it)
+        }.singleOrNull()
     }
 }

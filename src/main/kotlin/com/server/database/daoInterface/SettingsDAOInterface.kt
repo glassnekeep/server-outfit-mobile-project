@@ -17,6 +17,6 @@ interface SettingsDAOInterface {
     )
     fun deleteSettingsWithId(id: Int)
     fun deleteSettingsWithUser(user: User)
-    fun getSettingsWithUser(user: User) : Settings
-    fun getSettingsWithId(id: Int) : Settings
+    fun getSettingsWithUser(user: User) : Settings?
+    fun getSettingsWithId(id: Int) : Settings?
 }

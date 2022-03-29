@@ -1,11 +1,13 @@
 package com.server.database.tables
+import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
 
-object ProgramTable: Table("programs") {
-    val id = integer("id").autoIncrement()
+object ProgramTable: IntIdTable("programs") {
+    //val id = integer("id").autoIncrement()
     val interval = integer("interval")
     //TODO Тут скорее всего нужно определить связь между программой и пользователями/упражнениями через 2 промежуточные таблицы, для чего нужно определить первичные ключи
-    override val primaryKey: PrimaryKey = PrimaryKey(id, name = "ID")
+    //override val primaryKey: PrimaryKey = PrimaryKey(id, name = "ID")
 }
 
 object ExerciseTable: Table("exercises") {
@@ -15,7 +17,7 @@ object ExerciseTable: Table("exercises") {
     val periods = integer("periods")
     val weight = integer("weight")
     //TODO тут может быть как стринга - ссылка на картинку в интернете, так и сама картинка как ресурс
-    val image = blob("image")
+    val image = text("image")
     override val primaryKey: PrimaryKey = PrimaryKey(id, name = "ID")
 }
 
@@ -34,13 +36,13 @@ object SettingsTable: Table("settings") {
     override val primaryKey: PrimaryKey = PrimaryKey(userId, name = "ID")
 }
 
-object CalendarTable: Table("calendar") {
-    val id = integer("id").autoIncrement()
+object CalendarTable: IntIdTable("calendar") {
+    //val id = integer("id").autoIncrement()
     val date = text("date")
     //val exercise = integer("exercise_id")
     val program = integer("program_id")
     val user = integer("user_id")
-    override val primaryKey: PrimaryKey = PrimaryKey(id, name = "ID")
+   //override val primaryKey: PrimaryKey = PrimaryKey(id, name = "ID")
 }
 
 object UserTable: Table("users") {
@@ -59,11 +61,11 @@ object UserTable: Table("users") {
 }
 
 object ExerciseToProgramTable: Table("exercise_to_program") {
-    val exerciseId = reference("exercise_id", ExerciseTable.id)
-    val programId = reference("program_id", ProgramTable.id)
+    val exerciseId = reference("exercise_id", ExerciseTable.id, onDelete = ReferenceOption.CASCADE)
+    val programId = reference("program_id", ProgramTable.id, onDelete = ReferenceOption.CASCADE)
 }
 
 object ProgramToUserTable: Table("program_to_user") {
-    val programId = reference("program_id", ProgramTable.id)
-    val userId = reference("user_id", UserTable.id)
+    val programId = reference("program_id", ProgramTable.id, onDelete = ReferenceOption.CASCADE)
+    val userId = reference("user_id", UserTable.id, onDelete = ReferenceOption.CASCADE)
 }

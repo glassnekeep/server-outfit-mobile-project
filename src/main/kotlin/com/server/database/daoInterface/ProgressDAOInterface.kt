@@ -1,6 +1,8 @@
 package com.server.database.daoInterface
 
-import com.server.models.*
+import com.server.models.Program
+import com.server.models.Progress
+import com.server.models.User
 
 interface ProgressDAOInterface {
     fun createProgress(
@@ -15,6 +17,6 @@ interface ProgressDAOInterface {
         currentExercise: Int
     )
     fun deleteProgress(id: Int)
-    fun getProgressWithId(id: Int) : Progress
-    fun getProgressWithUserAndProgram(user: User, program: Program) : Progress
+    fun getProgressWithId(id: Int) : Progress?
+    fun getProgressWithUserAndProgram(user: User, program: Program) : Progress?
 }
