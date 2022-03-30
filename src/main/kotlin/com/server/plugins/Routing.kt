@@ -1,16 +1,9 @@
 package com.server.plugins
 
-import io.ktor.routing.*
-import io.ktor.http.*
+import com.server.routes.registerUserRoutes
 import io.ktor.application.*
-import io.ktor.response.*
-import io.ktor.request.*
 
+val password = "kirillleg17"
 fun Application.configureRouting() {
-
-    routing {
-        get("/") {
-            call.respondText("Hello World!")
-        }
-    }
+    registerUserRoutes()
 }

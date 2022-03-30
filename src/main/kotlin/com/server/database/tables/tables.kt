@@ -3,6 +3,7 @@ import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
 
+//TODO Поработать тут с blob и date, потому что после того как я все зависимости привел в порядок, должно получиться использовать их, а не стринги кругом
 object ProgramTable: IntIdTable("programs") {
     //val id = integer("id").autoIncrement()
     val interval = integer("interval")

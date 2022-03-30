@@ -1,47 +1,30 @@
 package com.server.plugins
 
-import io.ktor.auth.*
-import io.ktor.util.*
+import com.server.database.dao.Dao
 import io.ktor.application.*
-import io.ktor.response.*
-import io.ktor.request.*
+import io.ktor.auth.*
 import io.ktor.routing.*
+import io.ktor.util.*
 
-fun Application.configureSecurity() {
-
+fun Application.configureSecurity(dao: Dao) {
+    val digestFunction = getDigestFunction("SHA-256") { "ktor${it.length}" }
     authentication {
-        basic(name = "myauth1") {
-            realm = "Ktor Server"
+        basic("auth-basic-hashed") {
+            realm = "Access to the '/hash' path"
             validate { credentials ->
-                if (credentials.name == credentials.password) {
+                val authenticatingUser = dao.getUserWithUsername(credentials.name)
+                if (authenticatingUser != null && (authenticatingUser.password.equals(digestFunction(credentials.password)))) {
+                    //print("credentials.name = ${credentials.name}, credentials.password = ${digestFunction(credentials.password)}")
                     UserIdPrincipal(credentials.name)
                 } else {
+                    print("NO SUCH USER, name = ${credentials.name}\n")
                     null
                 }
-            }
-        }
-
-        form(name = "myauth2") {
-            userParamName = "user"
-            passwordParamName = "password"
-            challenge {
-                /**/
             }
         }
     }
 
     routing {
-        authenticate("myauth1") {
-            get("/protected/route/basic") {
-                val principal = call.principal<UserIdPrincipal>()!!
-                call.respondText("Hello ${principal.name}")
-            }
-        }
-        authenticate("myauth1") {
-            get("/protected/route/form") {
-                val principal = call.principal<UserIdPrincipal>()!!
-                call.respondText("Hello ${principal.name}")
-            }
-        }
+
     }
 }

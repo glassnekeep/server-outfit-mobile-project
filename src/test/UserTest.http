@@ -1,0 +1,17 @@
+POST http://127.0.0.1:8080/user
+Content-Type: application/json
+Authorization: Basic {{test}} {{123456}}
+
+{
+  "username": "test",
+  "firstname": "Kirill",
+  "lastname": "Legkodukh",
+  "phoneNumber": "7-999-555-99-99",
+  "email": "test1@yandex.ru",
+  "password": "123456",
+  "sex": "male",
+  "growth": 145,
+  "weight": 123
+}
+###
+GET http://127.0.0.1:8080/user?username=test
