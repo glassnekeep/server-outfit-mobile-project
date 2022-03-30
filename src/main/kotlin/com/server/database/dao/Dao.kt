@@ -4,8 +4,6 @@ import com.server.database.daoInterface.*
 import com.server.database.tables.*
 import com.server.models.*
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.javatime.date
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInterface,
@@ -146,10 +144,10 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
         }.singleOrNull()
     }
 
-    override fun addUserToProgramConnection(programId: Int, user: User) = transaction(db) {
+    override fun addUserToProgramConnection(programId: Int, userId: Int) = transaction(db) {
         ProgramToUserTable.insert {
             it[ProgramToUserTable.programId] = programId
-            it[ProgramToUserTable.userId] = user.id
+            it[ProgramToUserTable.userId] = userId
         }
         Unit
     }
@@ -170,7 +168,7 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
             addExerciseToProgram(value, id)
         }
         users.forEach { user ->
-            addUserToProgramConnection(id, user)
+            addUserToProgramConnection(id, user.id)
         }
     }
 
@@ -183,25 +181,43 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
     override fun updateProgram(id: Int, interval: Int, exercises: List<Exercise>, users: List<User>) = transaction(db) {
         ProgramTable.update({ ProgramTable.id eq id }) {
             it[ProgramTable.interval] = interval
-            getExerciseListWIthProgram()
+            //getExerciseListWithProgramId(id)
         }
         Unit
     }
 
     override fun deleteProgram(id: Int) = transaction(db) {
-        TODO("Not yet implemented")
+        ProgramTable.deleteWhere { ProgramTable.id eq id }
+        Unit
     }
 
-    override fun getProgramWithId(id: Int) : Program = transaction(db) {
-        TODO("Not yet implemented")
+    override fun getProgramWithId(id: Int) : Program? = transaction(db) {
+        ProgramTable.select { ProgramTable.id eq id }.map {
+            Program(
+                it[ProgramTable.id].value,
+                it[ProgramTable.interval],
+                getExerciseListWithProgramId(it[ProgramTable.id].value),
+                getUserListWithProgramId(it[ProgramTable.id].value)
+            )
+        }.singleOrNull()
     }
 
     override fun getProgramListWithUser(user: User): List<Program> = transaction(db) {
-        TODO("Not yet implemented")
+        ProgramTable.innerJoin(ProgramToUserTable).innerJoin(UserTable).slice(ProgramTable.columns).select { UserTable.id eq user.id }.map {
+            createProgramWithRow(it)
+        }
     }
 
     override fun getUserListWithProgram(program: Program): List<User> = transaction(db) {
-        TODO("Not yet implemented")
+        UserTable.innerJoin(ProgramToUserTable).innerJoin(ProgramTable).slice(UserTable.columns).select { ProgramTable.id eq program.id }.map {
+            createUserWithRow(it)
+        }
+    }
+
+    override fun getUserListWithProgramId(id: Int): List<User> = transaction(db) {
+        UserTable.innerJoin(ProgramToUserTable).innerJoin(ProgramTable).slice(ProgramTable.columns).select { ProgramTable.id eq id }.map {
+            createUserWithRow(it)
+        }
     }
 
     private fun createCalendarWithRow(row: ResultRow) : Calendar {
@@ -210,7 +226,7 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
         return Calendar(
             row[CalendarTable.id].value,
             row[CalendarTable.date],
-            program,
+            program!!,
             user!!
         )
     }
@@ -229,7 +245,7 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
     private fun createProgressWihRow(row: ResultRow) : Progress {
         return Progress(
             row[ProgressTable.id],
-            getProgramWithId(row[ProgressTable.programId]),
+            getProgramWithId(row[ProgressTable.programId])!!,
             getUserWithId(row[ProgressTable.userId])!!,
             row[ProgressTable.currentExercise]
         )
@@ -244,7 +260,17 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
         )
     }
 
-    override fun createCalendar(date: String program: Program, user: User) = transaction(db) {
+    private fun createProgramWithRow(row: ResultRow) : Program {
+        val programId = row[ProgramTable.id].value
+        return Program(
+            programId,
+            row[ProgramTable.interval],
+            getExerciseListWithProgramId(programId),
+            getUserListWithProgramId(programId),
+        )
+    }
+
+    override fun createCalendar(date: String, program: Program, user: User) = transaction(db) {
         CalendarTable.insert {
             it[CalendarTable.date] = date
             it[CalendarTable.program] = program.id
@@ -282,13 +308,20 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
     }
 
     override fun createExercise(
-        time: String,
+        time: Int,
         numberOfApproaches: Int,
         periods: Int,
         weight: Int,
         image: String
     ) = transaction(db) {
-        TODO("Not yet implemented")
+        ExerciseTable.insert {
+            it[ExerciseTable.time] = time
+            it[ExerciseTable.numberOfApproaches] = numberOfApproaches
+            it[ExerciseTable.periods] = periods
+            it[ExerciseTable.weight] = weight
+            it[ExerciseTable.image] = image
+        }
+        Unit
     }
 
     override fun updateExercise(
@@ -321,13 +354,21 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
         }.singleOrNull()
     }
 
-    override fun getExerciseListWIthProgram(program: Program): List<Exercise>? = transaction(db) {
+    override fun getExerciseListWIthProgram(program: Program): List<Exercise> = transaction(db) {
         ExerciseTable.innerJoin(ExerciseToProgramTable).innerJoin(ProgramTable).slice(ProgramTable.columns).select {
             ProgramTable.id eq program.id
         }.map {
             createExerciseWithRow(it)
         }
         //TODO Тут надо обработать ошибки при получении из бд null
+    }
+
+    override fun getExerciseListWithProgramId(id: Int): List<Exercise> = transaction(db) {
+        ExerciseTable.innerJoin(ExerciseToProgramTable).innerJoin(ProgramTable).slice(ExerciseTable.columns).select {
+            ExerciseTable.id eq id
+        }.map {
+            createExerciseWithRow(it)
+        }
     }
 
     override fun createProgress(program: Program, user: User, currentExercise: Int) = transaction(db) {
@@ -360,7 +401,7 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
     }
 
     override fun getProgressWithUserAndProgram(user: User, program: Program): Progress? = transaction(db) {
-        ProgressTable.select { ProgressTable.userId eq user.id and ProgressTable.programId eq program.id }.map {
+        ProgressTable.select { (ProgressTable.userId eq user.id) and (ProgressTable.programId eq program.id) }.map {
             createProgressWihRow(it)
         }.singleOrNull()
     }
