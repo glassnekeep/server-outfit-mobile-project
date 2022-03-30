@@ -144,7 +144,7 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
         }.singleOrNull()
     }
 
-    override fun addUserToProgramConnection(programId: Int, userId: Int) = transaction(db) {
+    override fun addUserToProgram(programId: Int, userId: Int) = transaction(db) {
         ProgramToUserTable.insert {
             it[ProgramToUserTable.programId] = programId
             it[ProgramToUserTable.userId] = userId
@@ -152,9 +152,9 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
         Unit
     }
 
-    override fun addExerciseToProgram(exercise: Exercise, programId: Int) = transaction(db) {
+    override fun addExerciseToProgram(exerciseId: Int, programId: Int) = transaction(db) {
         ExerciseToProgramTable.insert {
-            it[ExerciseToProgramTable.exerciseId] = exercise.id
+            it[ExerciseToProgramTable.exerciseId] = exerciseId
             it[ExerciseToProgramTable.programId] = programId
         }
         Unit
@@ -165,10 +165,10 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
             it[ProgramTable.interval] = interval
         }.value
         exercises.forEach { value ->
-            addExerciseToProgram(value, id)
+            addExerciseToProgram(value.id, id)
         }
         users.forEach { user ->
-            addUserToProgramConnection(id, user.id)
+            addUserToProgram(id, user.id)
         }
     }
 
@@ -181,7 +181,26 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
     override fun updateProgram(id: Int, interval: Int, exercises: List<Exercise>, users: List<User>) = transaction(db) {
         ProgramTable.update({ ProgramTable.id eq id }) {
             it[ProgramTable.interval] = interval
-            //getExerciseListWithProgramId(id)
+        }
+        val currentExerciseList = getExerciseListWithProgramId(id)
+        val currentUserList = getUserListWithProgramId(id)
+        val listOfDeletedExercises = currentExerciseList.minus(exercises.toSet()).map{ it.id }
+        val listOfNewExercises = exercises.minus(currentExerciseList.toSet()).map{ it.id }
+        val listOfDeletedUsers = currentUserList.minus(users.toSet()).map{ it.id }
+        val listOfNewUsers = users.minus(currentUserList.toSet()).map { it.id }
+        ExerciseToProgramTable.deleteWhere { ExerciseToProgramTable.exerciseId inList listOfDeletedExercises }
+        /*ExerciseToProgramTable.insert { newValue ->
+            listOfNewExercises.forEach { exerciseId ->
+                newValue[ExerciseToProgramTable.programId] = id
+                newValue[ExerciseToProgramTable.exerciseId] = exerciseId
+            }
+        }*/
+        ProgramToUserTable.deleteWhere { ProgramToUserTable.userId inList listOfDeletedUsers }
+        listOfNewExercises.forEach { exerciseId ->
+            addExerciseToProgram(exerciseId, id)
+        }
+        listOfNewUsers.forEach { userId ->
+            addUserToProgram(id, userId)
         }
         Unit
     }
@@ -360,7 +379,7 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
         }.map {
             createExerciseWithRow(it)
         }
-        //TODO Тут надо обработать ошибки при получении из бд null
+        //TODO Тут и в других местах надо обработать ошибки при получении из бд null
     }
 
     override fun getExerciseListWithProgramId(id: Int): List<Exercise> = transaction(db) {
@@ -373,8 +392,10 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
 
     override fun createProgress(program: Program, user: User, currentExercise: Int) = transaction(db) {
         ProgressTable.insert {
-            it[ProgressTable.programId] = program.id
-            it[ProgressTable.userId] = user.id
+            val programId = program.id
+            val userId = user.id
+            it[ProgressTable.programId] = programId
+            it[ProgressTable.userId] = userId
             it[ProgressTable.currentExercise] = currentExercise
         }
         Unit
@@ -382,8 +403,10 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
 
     override fun updateProgress(id: Int, program: Program, user: User, currentExercise: Int) = transaction(db) {
         ProgressTable.update ({ ProgressTable.id eq id }) {
-            it[ProgressTable.programId] = program.id
-            it[ProgressTable.userId] = user.id
+            val programId = program.id
+            val userId = user.id
+            it[ProgressTable.programId] = programId
+            it[ProgressTable.userId] = userId
             it[ProgressTable.currentExercise] = currentExercise
         }
         Unit
@@ -408,7 +431,8 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
 
     override fun createSettings(user: User, restTime: Int, countDownTime: Int) = transaction(db) {
         SettingsTable.insert {
-            it[SettingsTable.userId] = user.id
+            val userId = user.id
+            it[SettingsTable.userId] = userId
             it[SettingsTable.restTime] = restTime
             it[SettingsTable.countDownTime] = countDownTime
         }

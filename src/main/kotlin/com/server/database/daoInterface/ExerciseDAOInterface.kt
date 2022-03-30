@@ -21,6 +21,6 @@ interface ExerciseDAOInterface {
     )
     fun deleteExercise(id: Int)
     fun getExercise(id: Int) : Exercise?
-    fun getExerciseListWIthProgram(program: Program) : List<Exercise>?
+    fun getExerciseListWIthProgram(program: Program) : List<Exercise>
     fun getExerciseListWithProgramId(id: Int) : List<Exercise>
 }

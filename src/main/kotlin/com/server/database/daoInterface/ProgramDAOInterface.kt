@@ -22,6 +22,6 @@ interface ProgramDAOInterface {
     fun getProgramListWithUser(user: User) : List<Program>
     fun getUserListWithProgram(program: Program) : List<User>
     fun getUserListWithProgramId(id: Int) : List<User>?
-    fun addUserToProgramConnection(programId: Int, userId: Int)
-    fun addExerciseToProgram(exercise: Exercise, programId: Int)
+    fun addUserToProgram(programId: Int, userId: Int)
+    fun addExerciseToProgram(exerciseId: Int, programId: Int)
 }
