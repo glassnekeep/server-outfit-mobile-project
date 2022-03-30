@@ -18,7 +18,7 @@ fun main() {
             password = com.server.plugins.password
         ))
         dao.init()
-        configureRouting()
+        configureRouting(dao)
         configureSecurity(dao)
         configureSerialization()
     }.start(wait = true)
