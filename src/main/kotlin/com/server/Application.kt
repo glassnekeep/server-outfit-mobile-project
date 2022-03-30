@@ -20,7 +20,6 @@ fun main() {
         ))
         dao.init()
         println(digestFunction("password"))
-        println("HHHHHHHH")
         configureSecurity(dao)
         configureRouting(dao)
         configureSerialization()
