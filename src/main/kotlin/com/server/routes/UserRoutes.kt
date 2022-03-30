@@ -2,6 +2,7 @@ package com.server.routes
 
 import com.server.database.dao.Dao
 import com.server.models.User
+import com.server.plugins.digestFunction
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.http.*
@@ -14,7 +15,7 @@ fun Route.createUser(dao: Dao) {
         val user = call.receive<User>()
         dao.createUser(
             user.username, user.firstname, user.lastname, user.phoneNumber, user.email,
-            user.password, user.sex, user.growth, user.weight
+            digestFunction(user.password).toString(), user.sex, user.growth, user.weight
         )
         call.respond("User created successfully!")
     }

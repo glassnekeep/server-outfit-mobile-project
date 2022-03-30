@@ -34,7 +34,7 @@ object SettingsTable: Table("settings") {
     val userId = integer("userId").uniqueIndex()
     val restTime = integer("rest_tIme")
     val countDownTime = integer("count_down_time")
-    override val primaryKey: PrimaryKey = PrimaryKey(userId, name = "ID")
+    //override val primaryKey: PrimaryKey = PrimaryKey(id, name = "ID")
 }
 
 object CalendarTable: IntIdTable("calendar") {

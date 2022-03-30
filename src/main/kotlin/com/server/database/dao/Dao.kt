@@ -9,7 +9,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInterface,
     ExerciseDAOInterface, ProgramDAOInterface, ProgressDAOInterface, SettingsDAOInterface {
 
-    override fun init() {
+    override fun init() = transaction(db) {
         SchemaUtils.create(tables = arrayOf(
             UserTable,
             CalendarTable,
@@ -20,6 +20,14 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
             ProgramToUserTable,
             ExerciseToProgramTable
         ))
+        /*SchemaUtils.create(UserTable)
+        SchemaUtils.create(CalendarTable)
+        SchemaUtils.create(ExerciseTable)
+        SchemaUtils.create(ProgramTable)
+        SchemaUtils.create(ProgressTable)
+        SchemaUtils.create(SettingsTable)
+        SchemaUtils.create(ProgramToUserTable)
+        SchemaUtils.create(ExerciseToProgramTable)*/
     }
 
     override fun close() {
