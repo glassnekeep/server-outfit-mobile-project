@@ -15,8 +15,10 @@ fun Route.createUser(dao: Dao) {
         val user = call.receive<User>()
         dao.createUser(
             user.username, user.firstname, user.lastname, user.phoneNumber, user.email,
-            digestFunction(user.password).toString(), user.sex, user.growth, user.weight
+            user.password, user.sex, user.growth, user.weight
         )
+        println("user.password, ${digestFunction(user.password).toString()}")
+        println("password, ${digestFunction("password").toString()}")
         call.respond("User created successfully!")
     }
 }

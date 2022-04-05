@@ -14,14 +14,10 @@ fun Application.configureSecurity(dao: Dao) {
             realm = "Access to the '/user' path"
             validate { credentials ->
                 val authenticatingUser = dao.getUserWithUsername(credentials.name)
-                if (authenticatingUser != null && (authenticatingUser.password == (digestFunction(credentials.password)).toString())) {
+                if (authenticatingUser != null && (authenticatingUser.password == credentials.password)) {
                     //print("credentials.name = ${credentials.name}, credentials.password = ${digestFunction(credentials.password)}")
                     UserIdPrincipal(credentials.name)
                 } else {
-                    println("NO SUCH USER, name = ${credentials.name}\n")
-                    println("credentials.name = ${credentials.name}\ncredentials.digest = ${digestFunction(credentials.password.toString())}\n" +
-                            "credentials.password = ${credentials.password}\n" +
-                            "username = ${authenticatingUser?.username}\npassword = ${authenticatingUser?.password}\npassword = ${authenticatingUser?.password}\n")
                     null
                 }
             }
