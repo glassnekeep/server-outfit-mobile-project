@@ -152,6 +152,16 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
         }.singleOrNull()
     }
 
+    override fun getAllUsers(): List<User> = transaction(db) {
+        UserTable.selectAll().map {
+            createUserWithRow(it)
+        }
+    }
+
+    override fun getAllUsersId(): List<Int> = transaction(db) {
+        UserTable.selectAll().map { it[UserTable.id] }
+    }
+
     override fun addUserToProgram(programId: Int, userId: Int) = transaction(db) {
         ProgramToUserTable.insert {
             it[ProgramToUserTable.programId] = programId
@@ -244,6 +254,12 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
     override fun getUserListWithProgramId(id: Int): List<User> = transaction(db) {
         UserTable.innerJoin(ProgramToUserTable).innerJoin(ProgramTable).slice(ProgramTable.columns).select { ProgramTable.id eq id }.map {
             createUserWithRow(it)
+        }
+    }
+
+    override fun getAllPrograms(): List<Program>  = transaction(db) {
+        ProgramTable.selectAll().map {
+            createProgramWithRow(it)
         }
     }
 

@@ -34,4 +34,6 @@ interface UserDAOInterface {
     fun getUserWithEmail(email: String) : User?
     fun getUserWithUsername(username: String) : User?
     fun getUserWithPhoneNumber(phoneNumber: String) : User?
+    fun getAllUsers() : List<User>
+    fun getAllUsersId() : List<Int>
 }
