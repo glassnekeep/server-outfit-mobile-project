@@ -1,0 +1,41 @@
+POST http://127.0.0.1:8080/user
+Content-Type: application/json
+
+{
+  "id": "234",
+  "username": "test",
+  "firstname": "Kirill",
+  "lastname": "Legkodukh",
+  "phoneNumber": "7-999-555-99-99",
+  "email": "test1@yandex.ru",
+  "password": "password",
+  "sex": "male",
+  "growth": "145",
+  "weight": "123"
+}
+###
+GET http://test:password@127.0.0.1:8080/user?username=test
+WWW-Authenticate: Basic charset="UTF-8"
+###
+
+GET http://test:password@127.0.0.1:8080/user?email=test1@yandex.ru
+###
+
+PUT http://test:password@127.0.0.1:8080/user/14
+Content-Type: application/json
+
+{
+  "id": "234",
+  "username": "test",
+  "firstname": "Kirill",
+  "lastname": "Legkodukh",
+  "phoneNumber": "7-999-555-99-99",
+  "email": "test1@yandex.ru",
+  "password": "password",
+  "sex": "female",
+  "growth": "145",
+  "weight": "123"
+}
+###
+
+DELETE http://test:password@127.0.0.1:8080/user?id=14
