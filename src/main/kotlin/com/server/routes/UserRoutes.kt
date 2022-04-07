@@ -12,14 +12,14 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import java.nio.charset.StandardCharsets
 
-fun Route.getAllUsersIds(dao: Dao) {
+private fun Route.getAllUsersIds(dao: Dao) {
     get("/users") {
         val users: List<Int> = dao.getAllUsersId()
         call.respond(users)
     }
 }
 
-fun Route.createUser(dao: Dao) {
+private fun Route.createUser(dao: Dao) {
     post("/user") {
         val user = call.receive<User>()
         val encryptedPassword = BCrypt.withDefaults().hash(10, user.password.toByteArray(StandardCharsets.UTF_8))
@@ -33,7 +33,7 @@ fun Route.createUser(dao: Dao) {
     }
 }
 
-fun Route.operateUser(dao: Dao) {
+private fun Route.operateUser(dao: Dao) {
     /*get("/user/id/{id}") {
         val id = call.parameters["id"]
     }

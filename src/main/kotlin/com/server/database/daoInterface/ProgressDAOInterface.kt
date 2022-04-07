@@ -19,4 +19,5 @@ interface ProgressDAOInterface {
     fun deleteProgress(id: Int)
     fun getProgressWithId(id: Int) : Progress?
     fun getProgressWithUserAndProgram(user: User, program: Program) : Progress?
+    fun getProgressWithUserIdAndProgramId(userId: Int, programId: Int) : Progress?
 }

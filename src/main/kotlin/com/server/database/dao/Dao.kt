@@ -453,6 +453,12 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
         }.singleOrNull()
     }
 
+    override fun getProgressWithUserIdAndProgramId(userId: Int, programId: Int): Progress? = transaction(db) {
+        ProgressTable.select { (ProgressTable.userId eq userId) and (ProgressTable.programId eq programId) }.map {
+            createProgressWihRow(it)
+        }.singleOrNull()
+    }
+
     override fun createSettings(user: User, restTime: Int, countDownTime: Int) = transaction(db) {
         SettingsTable.insert {
             val userId = user.id
