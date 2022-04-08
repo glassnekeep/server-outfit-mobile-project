@@ -26,26 +26,28 @@ private fun Route.operateProgress(dao: Dao) {
             }
             progress?.let {
                 call.respond(status = HttpStatusCode.OK, progress)
-            } ?: call.respondText("Invalid id", status = HttpStatusCode.BadRequest)
+            } ?: call.respondText("Missing or invalid id", status = HttpStatusCode.BadRequest)
         }
         post {
             val progress = call.receive<Progress>()
             dao.createProgress(progress.program, progress.user, progress.currentExercise)
-            call.respondText("Progress created successfully", status = HttpStatusCode.OK)
+            call.respondText("Progress created successfully", status = HttpStatusCode.Created)
         }
         put("/{id}") {
-            val id = call.parameters["id"]
-            id?.let {
-                val progress = call.receive<Progress>()
-                dao.updateProgress(id.toInt(), progress.program, progress.user, progress.currentExercise)
-                call.respondText("Progress updated successfully", status = HttpStatusCode.OK)
-            } ?: call.respondText("Invalid id", status = HttpStatusCode.BadRequest)
+            val id = call.parameters["id"]?.toInt() ?: return@put call.respondText(
+                "Missing or malformed id",
+                status = HttpStatusCode.BadRequest
+            )
+
+            val progress = call.receive<Progress>()
+            dao.updateProgress(id, progress.program, progress.user, progress.currentExercise)
+            call.respondText("Progress updated successfully", status = HttpStatusCode.Accepted)
         }
         delete("/{id}") {
             val id = call.parameters["id"]
             id?.let {
                 dao.deleteProgress(it.toInt())
-                call.respondText("Progress deleted successfully", status = HttpStatusCode.OK)
+                call.respondText("Progress deleted successfully", status = HttpStatusCode.Accepted)
             } ?: call.respondText("Invalid id", status = HttpStatusCode.BadRequest)
         }
     }

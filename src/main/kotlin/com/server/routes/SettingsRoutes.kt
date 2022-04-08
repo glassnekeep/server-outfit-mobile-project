@@ -21,7 +21,7 @@ private fun Route.operateSettings(dao: Dao) {
                         call.respond(status = HttpStatusCode.OK, settings)
                     } ?: call.respondText("Invalid id", status = HttpStatusCode.BadRequest)
                 } ?: userId?.let {
-                    val settings = dao.getSettingsWithUser(dao.getUserWithId(it.toInt())!!)
+                    val settings = dao.getSettingsWithUserId(it.toInt())
                     settings?.let {
                         call.respond(status = HttpStatusCode.OK, settings)
                     } ?: call.respondText("Invalid id", status = HttpStatusCode.BadRequest)
@@ -50,12 +50,9 @@ private fun Route.operateSettings(dao: Dao) {
                 id?.let {
                     dao.deleteSettingsWithId(id.toInt())
                 } ?: userId?.let {
-                    val user = dao.getUserWithId(userId.toInt())
-                    if (user != null) {
-                        dao.deleteSettingsWithUser(user)
-                    } else {
-                        call.respondText("Invalid id", status = HttpStatusCode.BadRequest)
-                    }
+                    //val user = dao.getUserWithId(userId.toInt())
+                    dao.deleteSettingsWithUserId(userId.toInt())
+                    call.respondText("Settings deleted successfully", status = HttpStatusCode.OK)
                 } ?: call.respondText("Invalid id", status = HttpStatusCode.BadRequest)
             } else {
                 call.respondText("Invalid parameters", status = HttpStatusCode.BadRequest)
