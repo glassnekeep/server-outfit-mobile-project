@@ -257,6 +257,12 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
         }
     }
 
+    override fun getProgramListWithUserId(userId: Int): List<Program> = transaction(db) {
+        ProgramTable.innerJoin(ProgramToUserTable).innerJoin(UserTable).slice(ProgramTable.columns).select { UserTable.id eq userId }.map {
+            createProgramWithRow(it)
+        }
+    }
+
     override fun getAllPrograms(): List<Program>  = transaction(db) {
         ProgramTable.selectAll().map {
             createProgramWithRow(it)
@@ -453,6 +459,12 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
         }.singleOrNull()
     }
 
+    override fun getProgressWithUserIdAndProgramId(userId: Int, programId: Int): Progress? = transaction(db) {
+        ProgressTable.select { (ProgressTable.userId eq userId) and (ProgressTable.programId eq programId) }.map {
+            createProgressWihRow(it)
+        }.singleOrNull()
+    }
+
     override fun createSettings(user: User, restTime: Int, countDownTime: Int) = transaction(db) {
         SettingsTable.insert {
             val userId = user.id
@@ -482,8 +494,19 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
         Unit
     }
 
+    override fun deleteSettingsWithUserId(userId: Int) = transaction(db) {
+        SettingsTable.deleteWhere { SettingsTable.userId eq userId }
+        Unit
+    }
+
     override fun getSettingsWithUser(user: User): Settings? = transaction(db) {
         SettingsTable.select { SettingsTable.userId eq user.id }.map {
+            createSettingsWithRow(it)
+        }.singleOrNull()
+    }
+
+    override fun getSettingsWithUserId(userId: Int): Settings? = transaction(db) {
+        SettingsTable.select { SettingsTable.userId eq userId }.map {
             createSettingsWithRow(it)
         }.singleOrNull()
     }

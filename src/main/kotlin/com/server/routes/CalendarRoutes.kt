@@ -8,7 +8,7 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 
-fun Route.operateCalendar(dao: Dao) {
+private fun Route.operateCalendar(dao: Dao) {
     route("/calendar") {
         get {
             val id = call.request.queryParameters["id"]
@@ -29,7 +29,7 @@ fun Route.operateCalendar(dao: Dao) {
         post {
             val calendar = call.receive<com.server.models.Calendar>()
             dao.createCalendar(calendar.date, calendar.program, calendar.user)
-            call.respondText("User created successfully", status = HttpStatusCode.OK)
+            call.respondText("Calendar created successfully", status = HttpStatusCode.OK)
         }
         put("/{id}") {
             val id = call.parameters["id"]
@@ -37,14 +37,14 @@ fun Route.operateCalendar(dao: Dao) {
                 val calendar = call.receive<com.server.models.Calendar>()
                 dao.updateCalendar(id.toInt(), calendar.date, calendar.program, calendar.user)
                 call.respondText("Calendar updated successfully", status = HttpStatusCode.OK)
-            } ?: call.respondText("Invalid id", status = HttpStatusCode.OK)
+            } ?: call.respondText("Invalid id", status = HttpStatusCode.BadRequest)
         }
         delete("/{id}") {
             val id = call.parameters["id"]
             id?.let {
                 dao.deleteCalendar(it.toInt())
                 call.respondText("Calendar deleted successfully", status = HttpStatusCode.OK)
-            } ?: call.respondText("Invalid id", status = HttpStatusCode.OK)
+            } ?: call.respondText("Invalid id", status = HttpStatusCode.BadRequest)
         }
     }
 }
@@ -52,7 +52,7 @@ fun Route.operateCalendar(dao: Dao) {
 fun Application.registerCalendarRoutes(dao: Dao) {
     routing {
         authenticate("auth-basic-hashed") {
-            operateUser(dao)
+            operateCalendar(dao)
         }
     }
 }

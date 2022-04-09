@@ -3,7 +3,6 @@ package com.server.routes
 import at.favre.lib.crypto.bcrypt.BCrypt
 import com.server.database.dao.Dao
 import com.server.models.User
-import com.server.plugins.digestFunction
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.http.*
@@ -12,14 +11,18 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import java.nio.charset.StandardCharsets
 
-fun Route.getAllUsersIds(dao: Dao) {
+private fun Route.getAllUsersIds(dao: Dao) {
     get("/users") {
         val users: List<Int> = dao.getAllUsersId()
-        call.respond(users)
+        if (users.isNotEmpty()) {
+            call.respond(users)
+        } else {
+            call.respondText("No user ids found", status = HttpStatusCode.NotFound)
+        }
     }
 }
 
-fun Route.createUser(dao: Dao) {
+private fun Route.createUser(dao: Dao) {
     post("/user") {
         val user = call.receive<User>()
         val encryptedPassword = BCrypt.withDefaults().hash(10, user.password.toByteArray(StandardCharsets.UTF_8))
@@ -27,64 +30,14 @@ fun Route.createUser(dao: Dao) {
             user.username, user.firstname, user.lastname, user.phoneNumber, user.email,
             user.password, user.sex, user.growth, user.weight
         )
-        println("user.password, ${digestFunction(user.password)}")
-        println("password, ${digestFunction("password").toString()}")
-        call.respondText("User created successfully!", status = HttpStatusCode.OK)
+        call.respondText("User created successfully!", status = HttpStatusCode.Created)
     }
 }
 
-fun Route.operateUser(dao: Dao) {
-    /*get("/user/id/{id}") {
-        val id = call.parameters["id"]
-    }
-    get("/user/email/{email}") {
-
-    }
-    get("/user/username/{username}") {
-
-    }
-    get("/user/phoneNumber/{phoneNumber}") {
-
-    }*/
-    /*get("/user") {
-        val id = call.request.queryParameters["id"]
-        val email = call.request.queryParameters["email"]
-        val username = call.request.queryParameters["username"]
-        val phoneNumber = call.request.queryParameters["phoneNumber"]
-        if (id != null) {
-            call.respond(mapOf("user" to dao.getUserWithId(id.toInt())))
-        }
-        if (email != null) {
-            call.respond(mapOf("user" to dao.getUserWithEmail(email)))
-        }
-        if (username != null) {
-            call.respond(mapOf("user" to dao.getUserWithUsername(username)))
-        }
-        if (phoneNumber != null) {
-            call.respond(mapOf("user" to dao.getUserWithPhoneNumber(phoneNumber)))
-        }
-    }*/
-    /*put("/user/{id}") {
-        val id = call.parameters["id"]
-        id?.let {
-            val user = call.receive<User>()
-            dao.updateUserWithId(
-                id.toInt(), user.username, user.firstname, user.lastname, user.phoneNumber, user.email,
-                user.password, user.sex, user.growth, user.weight)
-            call.respondText("User updated successfully!", status = HttpStatusCode.OK)
-        } ?: call.respondText("Invalid id", status = HttpStatusCode.BadRequest)
-    }*/
-    /*delete("/user/{id}") {
-        val id = call.parameters["id"]
-        id?.let {
-            dao.deleteUserWithId(id.toInt())
-            call.respondText("User deleted successfully!", status = HttpStatusCode.OK)
-        } ?: call.respondText("Invalid id", status = HttpStatusCode.BadRequest)
-    }*/
-
+private fun Route.operateUser(dao: Dao) {
     route("/user") {
         get {
-            val id = call.request.queryParameters["id"]
+            val id = call.request.queryParameters["id"]?.toInt()
             val email = call.request.queryParameters["email"]
             val username = call.request.queryParameters["username"]
             val phoneNumber = call.request.queryParameters["phoneNumber"]
@@ -93,29 +46,29 @@ fun Route.operateUser(dao: Dao) {
             }
             if (id != null) {
                 val user = dao.getUserWithId(id.toInt())
-                user?.let { call.respond(it) } ?: call.respondText("User does not exist", status = HttpStatusCode.BadRequest)
+                user?.let { call.respond(status = HttpStatusCode.OK, it) } ?: call.respondText("User does not exist", status = HttpStatusCode.NotFound)
             }
             if (email != null) {
                 val user = dao.getUserWithEmail(email)
-                user?.let { call.respond(it) } ?: call.respondText("User does not exist", status = HttpStatusCode.BadRequest)
+                user?.let { call.respond(status = HttpStatusCode.OK, it) } ?: call.respondText("User does not exist", status = HttpStatusCode.NotFound)
             }
             if (username != null) {
                 val user = dao.getUserWithUsername(username)
-                user?.let { call.respond(it) } ?: call.respondText("User does not exist", status = HttpStatusCode.BadRequest)
+                user?.let { call.respond(status = HttpStatusCode.OK, it) } ?: call.respondText("User does not exist", status = HttpStatusCode.NotFound)
             }
             if (phoneNumber != null) {
                 val user = dao.getUserWithPhoneNumber(phoneNumber)
-                user?.let { call.respond(it) } ?: call.respondText("User does not exist", status = HttpStatusCode.BadRequest)
+                user?.let { call.respond(status = HttpStatusCode.OK, it) } ?: call.respondText("User does not exist", status = HttpStatusCode.NotFound)
             }
         }
         put("/{id}") {
             val id = call.parameters["id"]
             id?.let {
-                val user = call.receive<User>()
+                val user= call.receive<User>()
                 dao.updateUserWithId(
                     id.toInt(), user.username, user.firstname, user.lastname, user.phoneNumber, user.email,
                     user.password, user.sex, user.growth, user.weight)
-                call.respondText("User updated successfully", status = HttpStatusCode.OK)
+                call.respondText("User updated successfully", status = HttpStatusCode.Accepted)
             } ?: call.respondText("Invalid id", status = HttpStatusCode.BadRequest)
         }
         delete {
@@ -128,20 +81,20 @@ fun Route.operateUser(dao: Dao) {
             }
             id?.let {
                 dao.deleteUserWithId(id.toInt())
-                call.respondText("User deleted successfully", status = HttpStatusCode.OK)
-            } ?: call.respondText("Invalid id", status = HttpStatusCode.BadRequest)
+                call.respondText("User deleted successfully", status = HttpStatusCode.Accepted)
+            } ?: call.respondText("Invalid id", status = HttpStatusCode.NotFound)
             email?.let {
                 dao.deleterUserWithEmail(email)
-                call.respondText("User deleted successfully", status = HttpStatusCode.OK)
-            } ?: call.respondText("Invalid email", status = HttpStatusCode.BadRequest)
+                call.respondText("User deleted successfully", status = HttpStatusCode.Accepted)
+            } ?: call.respondText("Invalid email", status = HttpStatusCode.NotFound)
             username?.let {
                 dao.deleterUserWithUsername(username)
-                call.respondText("User deleted successfully", status = HttpStatusCode.OK)
-            } ?: call.respondText("Invalid username", status = HttpStatusCode.BadRequest)
+                call.respondText("User deleted successfully", status = HttpStatusCode.Accepted)
+            } ?: call.respondText("Invalid username", status = HttpStatusCode.NotFound)
             phoneNumber?.let {
                 dao.deleterUserWithUsername(phoneNumber)
-                call.respondText("User deleted successfully", status = HttpStatusCode.OK)
-            } ?: call.respondText("Invalid phone number", status = HttpStatusCode.BadRequest)
+                call.respondText("User deleted successfully", status = HttpStatusCode.Accepted)
+            } ?: call.respondText("Invalid phone number", status = HttpStatusCode.NotFound)
         }
     }
 }
