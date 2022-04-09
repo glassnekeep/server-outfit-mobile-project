@@ -6,8 +6,8 @@ Content-Type: application/json
   "username": "test",
   "firstname": "Kirill",
   "lastname": "Legkodukh",
-  "phoneNumber": "7-999-555-99-99",
-  "email": "test1@yandex.ru",
+  "phoneNumber": "7-999-555-99-56",
+  "email": "test1@gmail.ru",
   "password": "password",
   "sex": "male",
   "growth": "145",
@@ -38,4 +38,7 @@ Content-Type: application/json
 }
 ###
 
-DELETE http://test:password@127.0.0.1:8080/user?id=15
+DELETE http://test:password@127.0.0.1:8080/user?id=16
+###
+
+GET http://test:password@127.0.0.1:8080/users
