@@ -178,9 +178,11 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
         Unit
     }
 
-    override fun createProgram(interval: Int, exercises: List<Exercise>, users: List<User>) = transaction(db) {
+    override fun createProgram(name: String, interval: Int, exercises: List<Exercise>, users: List<User>, image: String) = transaction(db) {
         val id = ProgramTable.insertAndGetId {
+            it[ProgramTable.name] = name
             it[ProgramTable.interval] = interval
+            it[ProgramTable.image] = image
         }.value
         exercises.forEach { value ->
             addExerciseToProgram(value.id, id)
@@ -196,9 +198,11 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
         }
     }
 
-    override fun updateProgram(id: Int, interval: Int, exercises: List<Exercise>, users: List<User>) = transaction(db) {
+    override fun updateProgram(id: Int, name: String, interval: Int, exercises: List<Exercise>, users: List<User>, image: String) = transaction(db) {
         ProgramTable.update({ ProgramTable.id eq id }) {
+            it[ProgramTable.name] = name
             it[ProgramTable.interval] = interval
+            it[ProgramTable.image] = image
         }
         val currentExerciseList = getExerciseListWithProgramId(id)
         val currentUserList = getUserListWithProgramId(id)
@@ -232,9 +236,11 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
         ProgramTable.select { ProgramTable.id eq id }.map {
             Program(
                 it[ProgramTable.id].value,
+                it[ProgramTable.name],
                 it[ProgramTable.interval],
                 getExerciseListWithProgramId(it[ProgramTable.id].value),
-                getUserListWithProgramId(it[ProgramTable.id].value)
+                getUserListWithProgramId(it[ProgramTable.id].value),
+                it[ProgramTable.image]
             )
         }.singleOrNull()
     }
@@ -283,6 +289,7 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
     private fun createExerciseWithRow(row: ResultRow) : Exercise {
         return Exercise(
             row[ExerciseTable.id],
+            row[ExerciseTable.name],
             row[ExerciseTable.time],
             row[ExerciseTable.numberOfApproaches],
             row[ExerciseTable.periods],
@@ -313,9 +320,11 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
         val programId = row[ProgramTable.id].value
         return Program(
             programId,
+            row[ProgramTable.name],
             row[ProgramTable.interval],
             getExerciseListWithProgramId(programId),
             getUserListWithProgramId(programId),
+            row[ProgramTable.image]
         )
     }
 
@@ -357,6 +366,7 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
     }
 
     override fun createExercise(
+        name: String,
         time: Int,
         numberOfApproaches: Int,
         periods: Int,
@@ -364,6 +374,7 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
         image: String
     ) = transaction(db) {
         ExerciseTable.insert {
+            it[ExerciseTable.name] = name
             it[ExerciseTable.time] = time
             it[ExerciseTable.numberOfApproaches] = numberOfApproaches
             it[ExerciseTable.periods] = periods
@@ -375,6 +386,7 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
 
     override fun updateExercise(
         id: Int,
+        name: String,
         time: Int,
         numberOfApproaches: Int,
         periods: Int,
@@ -383,6 +395,7 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
     ) = transaction(db) {
         ExerciseTable.update({ ExerciseTable.id eq id }) {
             it[ExerciseTable.id] = id
+            it[ExerciseTable.name] = name
             it[ExerciseTable.time] = time
             it[ExerciseTable.numberOfApproaches] = numberOfApproaches
             it[ExerciseTable.periods] = periods

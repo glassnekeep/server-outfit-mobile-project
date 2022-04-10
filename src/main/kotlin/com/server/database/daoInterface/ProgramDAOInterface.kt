@@ -6,16 +6,20 @@ import com.server.models.User
 
 interface ProgramDAOInterface {
     fun createProgram(
+        name: String,
         interval: Int,
         exercises: List<Exercise>,
-        users: List<User>
+        users: List<User>,
+        image: String
     )
     fun createEmptyProgram(interval: Int)
     fun updateProgram(
         id: Int,
+        name: String,
         interval: Int,
         exercises: List<Exercise>,
-        users: List<User>
+        users: List<User>,
+        image: String
     )
     fun deleteProgram(id: Int)
     fun getProgramWithId(id: Int) : Program?

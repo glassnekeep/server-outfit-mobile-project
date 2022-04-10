@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Exercise(
     val id: Int,
+    val name: String,
     val time: Int,
     val numberOfApproaches: Int,
     val periods: Int,
