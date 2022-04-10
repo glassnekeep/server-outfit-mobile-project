@@ -5,6 +5,7 @@ import com.server.models.Program
 
 interface ExerciseDAOInterface {
     fun createExercise(
+        name: String,
         time: Int,
         numberOfApproaches: Int,
         periods: Int,
@@ -13,6 +14,7 @@ interface ExerciseDAOInterface {
     )
     fun updateExercise(
         id: Int,
+        name: String,
         time: Int,
         numberOfApproaches: Int,
         periods: Int,

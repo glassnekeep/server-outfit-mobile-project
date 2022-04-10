@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Program(
     val id: Int,
+    val name: String,
     val interval: Int,
     val exercise: List<Exercise>,
     val users: List<User>,

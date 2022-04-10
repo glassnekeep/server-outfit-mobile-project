@@ -61,7 +61,7 @@ private fun Route.operateProgram(dao: Dao) {
         post {
             val program = call.receive<Program>()
             program.let {
-                dao.createProgram(it.interval, it.exercise, it.users, it.image)
+                dao.createProgram(it.name, it.interval, it.exercise, it.users, it.image)
             }
             call.respondText("Program created successfully", status = HttpStatusCode.Created)
         }
@@ -91,7 +91,7 @@ private fun Route.operateProgram(dao: Dao) {
             )
             id.let {
                 val program = call.receive<Program>()
-                dao.updateProgram(id, program.interval, program.exercise, program.users, program.image)
+                dao.updateProgram(id, program.name, program.interval, program.exercise, program.users, program.image)
                 return@put call.respondText("program updated successfully", status = HttpStatusCode.Accepted)
             }
         }

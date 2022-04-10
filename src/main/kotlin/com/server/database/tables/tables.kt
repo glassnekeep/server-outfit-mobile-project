@@ -7,6 +7,7 @@ import org.jetbrains.exposed.sql.Table
 object ProgramTable: IntIdTable("programs") {
     //val id = integer("id").autoIncrement()
     val interval = integer("interval")
+    val name = text("name")
     val image = text("image")
     //TODO Тут скорее всего нужно определить связь между программой и пользователями/упражнениями через 2 промежуточные таблицы, для чего нужно определить первичные ключи
     //override val primaryKey: PrimaryKey = PrimaryKey(id, name = "ID")
@@ -14,6 +15,7 @@ object ProgramTable: IntIdTable("programs") {
 
 object ExerciseTable: Table("exercises") {
     val id = integer("id").autoIncrement()
+    val name = text("name")
     val time = integer("time")
     val numberOfApproaches = integer("number_of_approaches")
     val periods = integer("periods")
