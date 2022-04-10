@@ -8,14 +8,16 @@ interface ProgramDAOInterface {
     fun createProgram(
         interval: Int,
         exercises: List<Exercise>,
-        users: List<User>
+        users: List<User>,
+        image: String
     )
     fun createEmptyProgram(interval: Int)
     fun updateProgram(
         id: Int,
         interval: Int,
         exercises: List<Exercise>,
-        users: List<User>
+        users: List<User>,
+        image: String
     )
     fun deleteProgram(id: Int)
     fun getProgramWithId(id: Int) : Program?

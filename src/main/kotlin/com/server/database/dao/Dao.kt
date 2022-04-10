@@ -178,9 +178,10 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
         Unit
     }
 
-    override fun createProgram(interval: Int, exercises: List<Exercise>, users: List<User>) = transaction(db) {
+    override fun createProgram(interval: Int, exercises: List<Exercise>, users: List<User>, image: String) = transaction(db) {
         val id = ProgramTable.insertAndGetId {
             it[ProgramTable.interval] = interval
+            it[ProgramTable.image] = image
         }.value
         exercises.forEach { value ->
             addExerciseToProgram(value.id, id)
@@ -196,9 +197,10 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
         }
     }
 
-    override fun updateProgram(id: Int, interval: Int, exercises: List<Exercise>, users: List<User>) = transaction(db) {
+    override fun updateProgram(id: Int, interval: Int, exercises: List<Exercise>, users: List<User>, image: String) = transaction(db) {
         ProgramTable.update({ ProgramTable.id eq id }) {
             it[ProgramTable.interval] = interval
+            it[ProgramTable.image] = image
         }
         val currentExerciseList = getExerciseListWithProgramId(id)
         val currentUserList = getUserListWithProgramId(id)
@@ -234,7 +236,8 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
                 it[ProgramTable.id].value,
                 it[ProgramTable.interval],
                 getExerciseListWithProgramId(it[ProgramTable.id].value),
-                getUserListWithProgramId(it[ProgramTable.id].value)
+                getUserListWithProgramId(it[ProgramTable.id].value),
+                it[ProgramTable.image]
             )
         }.singleOrNull()
     }
@@ -316,6 +319,7 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
             row[ProgramTable.interval],
             getExerciseListWithProgramId(programId),
             getUserListWithProgramId(programId),
+            row[ProgramTable.image]
         )
     }
 
