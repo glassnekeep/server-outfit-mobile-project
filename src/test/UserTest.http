@@ -14,7 +14,7 @@ Content-Type: application/json
   "weight": "123"
 }
 ###
-GET http://test:password@127.0.0.1:8080/user?username=test
+GET http://test:password@127.0.0.1:8080/user?id=23
 WWW-Authenticate: Basic charset="UTF-8"
 ###
 
@@ -41,4 +41,4 @@ Content-Type: application/json
 DELETE http://test:password@127.0.0.1:8080/user?id=16
 ###
 
-GET http://test:password@127.0.0.1:8080/users
+GET http://127.0.0.1:8080/users

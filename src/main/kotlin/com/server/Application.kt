@@ -4,7 +4,6 @@ import com.server.database.dao.Dao
 import com.server.plugins.configureRouting
 import com.server.plugins.configureSecurity
 import com.server.plugins.configureSerialization
-import com.server.plugins.digestFunction
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import org.jetbrains.exposed.sql.Database
@@ -19,7 +18,6 @@ fun main() {
             password = com.server.plugins.password
         ))
         dao.init()
-        println(digestFunction("password"))
         configureSecurity(dao)
         configureRouting(dao)
         configureSerialization()

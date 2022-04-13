@@ -29,14 +29,14 @@ private fun Route.operateExercise(dao: Dao) {
         }
         post {
             val exercise = call.receive<Exercise>()
-            dao.createExercise(exercise.time, exercise.numberOfApproaches, exercise.periods, exercise.weight, exercise.image)
+            dao.createExercise(exercise.name, exercise.time, exercise.numberOfApproaches, exercise.periods, exercise.weight, exercise.image)
             call.respondText("Exercise created successfully", status = HttpStatusCode.OK)
         }
         put("/{id}") {
             val id = call.parameters["id"]
             id?.let {
                 val exercise = call.receive<Exercise>()
-                dao.updateExercise(id.toInt(), exercise.time, exercise.numberOfApproaches, exercise.periods, exercise.weight, exercise.image)
+                dao.updateExercise(id.toInt(), exercise.name, exercise.time, exercise.numberOfApproaches, exercise.periods, exercise.weight, exercise.image)
                 call.respondText("Exercise updated successfully", status = HttpStatusCode.OK)
             } ?: call.respondText("Invalid id", status = HttpStatusCode.BadRequest)
         }
