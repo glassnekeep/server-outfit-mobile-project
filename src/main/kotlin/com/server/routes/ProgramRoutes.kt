@@ -103,6 +103,25 @@ private fun Route.operateProgram(dao: Dao) {
             dao.deleteProgram(id)
             call.respondText("Program deleted successfully", status = HttpStatusCode.Accepted)
         }
+        delete("/{id}") {
+            val id = call.parameters["id"]?.toInt() ?: return@delete call.respondText(
+                "Invalid or malformed id",
+                status = HttpStatusCode.BadRequest
+            )
+            val userId = call.request.queryParameters["user"]?.toInt()
+            val exerciseId = call.request.queryParameters["exercise"]?.toInt()
+            if (userId == null && exerciseId == null) {
+                call.respondText("No parameters", status = HttpStatusCode.BadRequest)
+            }
+            if (userId != null) {
+                val user = dao.deleteUserFromProgram(userId = userId, programId = id)
+                user.let { call.respond(status = HttpStatusCode.OK, it) } //?: call.respondText("User does not exist", status = HttpStatusCode.NotFound)
+            }
+            if (exerciseId != null) {
+                val user = dao.deleteExerciseFromProgram(exerciseId = exerciseId, programId = id)
+                user.let { call.respond(status = HttpStatusCode.OK, it) } //?: call.respondText("User does not exist", status = HttpStatusCode.NotFound)
+            }
+        }
     }
 }
 
