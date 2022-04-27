@@ -69,7 +69,7 @@ private fun Route.operateProgram(dao: Dao) {
             val id = call.parameters["id"]?.toInt() ?: return@post call.respondText(
                 "Missing of malformed id", status = HttpStatusCode.BadRequest
             )
-            val exercise = call.request.queryParameters["id"]?.toInt()
+            val exercise = call.request.queryParameters["exercise"]?.toInt()
             val user = call.request.queryParameters["user"]?.toInt()
             if (exercise != null) {
                 dao.addExerciseToProgram(exercise, id)

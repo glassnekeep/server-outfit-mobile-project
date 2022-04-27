@@ -35,7 +35,7 @@ object ProgressTable: Table("progress") {
 object SettingsTable: Table("settings") {
     val id = integer("id").autoIncrement()
     val userId = integer("userId").uniqueIndex()
-    val restTime = integer("rest_tIme")
+    val restTime = integer("rest_time")
     val countDownTime = integer("count_down_time")
     //override val primaryKey: PrimaryKey = PrimaryKey(id, name = "ID")
 }
