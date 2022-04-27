@@ -111,7 +111,7 @@ private fun Route.operateProgram(dao: Dao) {
             val userId = call.request.queryParameters["user"]?.toInt()
             val exerciseId = call.request.queryParameters["exercise"]?.toInt()
             if (userId == null && exerciseId == null) {
-                call.respondText("No parameters", status = HttpStatusCode.BadRequest)
+                return@delete call.respondText("No parameters", status = HttpStatusCode.BadRequest)
             }
             if (userId != null) {
                 val user = dao.deleteUserFromProgram(userId = userId, programId = id)
