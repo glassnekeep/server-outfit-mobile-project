@@ -440,7 +440,7 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
 
     override fun getExerciseListWithProgramId(id: Int): List<Exercise> = transaction(db) {
         ExerciseTable.innerJoin(ExerciseToProgramTable).innerJoin(ProgramTable).slice(ExerciseTable.columns).select {
-            ExerciseTable.id eq id
+            ExerciseToProgramTable.programId eq id
         }.map {
             createExerciseWithRow(it)
         }

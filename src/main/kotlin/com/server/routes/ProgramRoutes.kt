@@ -95,14 +95,14 @@ private fun Route.operateProgram(dao: Dao) {
                 return@put call.respondText("program updated successfully", status = HttpStatusCode.Accepted)
             }
         }
-        delete("/{id}") {
+        /*delete("/{id}") {
             val id = call.parameters["id"]?.toInt() ?: return@delete call.respondText(
                 "Missing or malformed id", status = HttpStatusCode.BadRequest
             )
             //TODO здесь и в подобных местах нужно проверять что такой пользователь есть в базе данных и отправлять соответствующий response
             dao.deleteProgram(id)
             call.respondText("Program deleted successfully", status = HttpStatusCode.Accepted)
-        }
+        }*/
         delete("/{id}") {
             val id = call.parameters["id"]?.toInt() ?: return@delete call.respondText(
                 "Invalid or malformed id",
