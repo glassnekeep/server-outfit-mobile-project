@@ -36,7 +36,7 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
 
     private fun createUserWithRow(row: ResultRow) : User {
         return User(
-            row[UserTable.id],
+            row[UserTable.id].value,
             row[UserTable.username],
             row[UserTable.firstname],
             row[UserTable.lastname],
@@ -60,7 +60,7 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
         growth: Int,
         weight: Int
     ) = transaction(db) {
-        UserTable.insert {
+        val id = UserTable.insertAndGetId {
             it[UserTable.username] = username
             it[UserTable.firstname] = firstname
             it[UserTable.lastname] = lastname
@@ -71,6 +71,18 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
             it[UserTable.growth] = growth
             it[UserTable.weight] = weight
         }
+        createSettings(user = User(
+            id = id.value,
+            username = username,
+            firstname = firstname,
+            lastname = lastname,
+            phoneNumber = phoneNumber,
+            email = email,
+            password = password,
+            sex = sex,
+            growth = growth,
+            weight = weight
+        ), restTime = 15, countDownTime = 20)
         Unit
     }
 
@@ -159,7 +171,7 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
     }
 
     override fun getAllUsersId(): List<Int> = transaction(db) {
-        UserTable.selectAll().map { it[UserTable.id] }
+        UserTable.selectAll().map { it[UserTable.id].value }
     }
 
     override fun addUserToProgram(programId: Int, userId: Int) = transaction(db) {
@@ -175,6 +187,19 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
             it[ExerciseToProgramTable.exerciseId] = exerciseId
             it[ExerciseToProgramTable.programId] = programId
         }
+        Unit
+    }
+
+    override fun deleteUserFromProgram(userId: Int, programId: Int) = transaction(db) {
+        ProgramToUserTable.deleteWhere {
+            (ProgramToUserTable.userId eq userId) and
+                    (ProgramToUserTable.programId eq programId) }
+        Unit
+    }
+
+    override fun deleteExerciseFromProgram(exerciseId: Int, programId: Int) = transaction(db) {
+        ExerciseToProgramTable.deleteWhere { (ExerciseToProgramTable.exerciseId eq exerciseId) and
+                (ExerciseToProgramTable.programId eq ExerciseToProgramTable.programId)}
         Unit
     }
 
@@ -427,7 +452,7 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
 
     override fun getExerciseListWithProgramId(id: Int): List<Exercise> = transaction(db) {
         ExerciseTable.innerJoin(ExerciseToProgramTable).innerJoin(ProgramTable).slice(ExerciseTable.columns).select {
-            ExerciseTable.id eq id
+            ExerciseToProgramTable.programId eq id
         }.map {
             createExerciseWithRow(it)
         }

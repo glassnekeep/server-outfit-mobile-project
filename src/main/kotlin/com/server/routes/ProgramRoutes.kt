@@ -69,7 +69,7 @@ private fun Route.operateProgram(dao: Dao) {
             val id = call.parameters["id"]?.toInt() ?: return@post call.respondText(
                 "Missing of malformed id", status = HttpStatusCode.BadRequest
             )
-            val exercise = call.request.queryParameters["id"]?.toInt()
+            val exercise = call.request.queryParameters["exercise"]?.toInt()
             val user = call.request.queryParameters["user"]?.toInt()
             if (exercise != null) {
                 dao.addExerciseToProgram(exercise, id)
@@ -95,13 +95,32 @@ private fun Route.operateProgram(dao: Dao) {
                 return@put call.respondText("program updated successfully", status = HttpStatusCode.Accepted)
             }
         }
-        delete("/{id}") {
+        /*delete("/{id}") {
             val id = call.parameters["id"]?.toInt() ?: return@delete call.respondText(
                 "Missing or malformed id", status = HttpStatusCode.BadRequest
             )
             //TODO здесь и в подобных местах нужно проверять что такой пользователь есть в базе данных и отправлять соответствующий response
             dao.deleteProgram(id)
             call.respondText("Program deleted successfully", status = HttpStatusCode.Accepted)
+        }*/
+        delete("/{id}") {
+            val id = call.parameters["id"]?.toInt() ?: return@delete call.respondText(
+                "Invalid or malformed id",
+                status = HttpStatusCode.BadRequest
+            )
+            val userId = call.request.queryParameters["user"]?.toInt()
+            val exerciseId = call.request.queryParameters["exercise"]?.toInt()
+            if (userId == null && exerciseId == null) {
+                return@delete call.respondText("No parameters", status = HttpStatusCode.BadRequest)
+            }
+            if (userId != null) {
+                val user = dao.deleteUserFromProgram(userId = userId, programId = id)
+                user.let { call.respond(status = HttpStatusCode.OK, it) } //?: call.respondText("User does not exist", status = HttpStatusCode.NotFound)
+            }
+            if (exerciseId != null) {
+                val user = dao.deleteExerciseFromProgram(exerciseId = exerciseId, programId = id)
+                user.let { call.respond(status = HttpStatusCode.OK, it) } //?: call.respondText("User does not exist", status = HttpStatusCode.NotFound)
+            }
         }
     }
 }

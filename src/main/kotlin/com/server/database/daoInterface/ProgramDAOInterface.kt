@@ -30,4 +30,6 @@ interface ProgramDAOInterface {
     fun getAllPrograms() : List<Program>
     fun addUserToProgram(programId: Int, userId: Int)
     fun addExerciseToProgram(exerciseId: Int, programId: Int)
+    fun deleteUserFromProgram(userId: Int, programId: Int)
+    fun deleteExerciseFromProgram(exerciseId: Int, programId: Int)
 }

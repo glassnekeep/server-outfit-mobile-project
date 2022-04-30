@@ -35,7 +35,7 @@ object ProgressTable: Table("progress") {
 object SettingsTable: Table("settings") {
     val id = integer("id").autoIncrement()
     val userId = integer("userId").uniqueIndex()
-    val restTime = integer("rest_tIme")
+    val restTime = integer("rest_time")
     val countDownTime = integer("count_down_time")
     //override val primaryKey: PrimaryKey = PrimaryKey(id, name = "ID")
 }
@@ -49,8 +49,8 @@ object CalendarTable: IntIdTable("calendar") {
    //override val primaryKey: PrimaryKey = PrimaryKey(id, name = "ID")
 }
 
-object UserTable: Table("users") {
-    val id = integer("id").autoIncrement()
+object UserTable: IntIdTable("users") {
+    //val id = integer("id").autoIncrement()
     val username = varchar("username", 50)
     val firstname = varchar("firstname", 50)
     val lastname = varchar("lastname", 50)
@@ -61,7 +61,7 @@ object UserTable: Table("users") {
     val sex = varchar("sex", 30)
     val growth = integer("growth")
     val weight = integer("height")
-    override val primaryKey: PrimaryKey = PrimaryKey(id, name = "EMAIL")
+    //override val primaryKey: PrimaryKey = PrimaryKey(id, name = "EMAIL")
 }
 
 object ExerciseToProgramTable: Table("exercise_to_program") {
