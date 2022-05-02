@@ -55,3 +55,21 @@ GET http://test:password@127.0.0.1:8080/static/days_with_yoga.jpg
 
 ###
 GET http://test:password@127.0.0.1:8080/static/kesheshi.jpg
+
+###
+GET http://test:password@127.0.0.1:8080/static/exercise_for_beginners.jpg
+
+###
+GET http://test:password@127.0.0.1:8080/static/scretch_for_you.jpg
+
+###
+GET http://test:password@127.0.0.1:8080/static/image.png
+
+###
+GET http://test:password@127.0.0.1:8080/static/scretch.png
+
+###
+GET http://test:password@127.0.0.1:8080/static/pic1.jpg
+
+###
+GET http://test:password@127.0.0.1:8080/static/pic2.jpg
