@@ -73,3 +73,23 @@ GET http://test:password@127.0.0.1:8080/static/pic1.jpg
 
 ###
 GET http://test:password@127.0.0.1:8080/static/pic2.jpg
+
+###
+GET http://test:password@127.0.0.1:8080/static/2290.jpg
+
+###
+GET http://test:password@127.0.0.1:8080/static/ph1.png
+###
+GET http://test:password@127.0.0.1:8080/static/ph2.png
+###
+GET http://test:password@127.0.0.1:8080/static/ph3.png
+###
+GET http://test:password@127.0.0.1:8080/static/ph4.png
+###
+GET http://test:password@127.0.0.1:8080/static/ph5.png
+###
+GET http://test:password@127.0.0.1:8080/static/ph6.png
+###
+GET http://test:password@127.0.0.1:8080/static/ph7.png
+###
+GET http://test:password@127.0.0.1:8080/static/ph8.png
