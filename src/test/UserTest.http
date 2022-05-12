@@ -93,3 +93,29 @@ GET http://test:password@127.0.0.1:8080/static/ph6.png
 GET http://test:password@127.0.0.1:8080/static/ph7.png
 ###
 GET http://test:password@127.0.0.1:8080/static/ph8.png
+
+###
+GET http://test:password@127.0.0.1:8080/static/ex1.png
+###
+GET http://test:password@127.0.0.1:8080/static/ex2.png
+###
+GET http://test:password@127.0.0.1:8080/static/ex3.png
+###
+GET http://test:password@127.0.0.1:8080/static/ex4.png
+###
+GET http://test:password@127.0.0.1:8080/static/ex5.png
+###
+GET http://test:password@127.0.0.1:8080/static/ex6.png
+###
+GET http://test:password@127.0.0.1:8080/static/ex7.png
+###
+GET http://test:password@127.0.0.1:8080/static/ex8.png
+###
+GET http://test:password@127.0.0.1:8080/static/ex9.png
+###
+GET http://test:password@127.0.0.1:8080/static/ex10.png
+
+###
+GET http://test:password@127.0.0.1:8080/progress?user=24
+
+
