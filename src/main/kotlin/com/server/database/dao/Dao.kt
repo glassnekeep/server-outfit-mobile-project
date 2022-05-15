@@ -18,7 +18,8 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
             ProgressTable,
             SettingsTable,
             ProgramToUserTable,
-            ExerciseToProgramTable
+                ExerciseToProgramTable,
+                SharedProgressTable
         ))
         /*SchemaUtils.create(UserTable)
         SchemaUtils.create(CalendarTable)
@@ -513,6 +514,12 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
         ProgressTable.select { ProgressTable.id eq id }.map {
             createProgressWihRow(it)
         }.singleOrNull()
+    }
+
+    override fun getSharedProgressWithUserId(id: Int): List<List<Progress>> = transaction(db) {
+        SharedProgressTable.select { SharedProgressTable.recipientId eq id }.map { sender ->
+            getProgressListWithUserId(sender[SharedProgressTable.senderId].value)
+        }
     }
 
     override fun getProgressWithUserAndProgram(user: User, program: Program): Progress? = transaction(db) {

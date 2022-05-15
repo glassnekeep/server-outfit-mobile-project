@@ -24,6 +24,7 @@ interface ProgressDAOInterface {
     fun shareProgress(sharedProgress: SharedProgress)
     fun deleteProgress(id: Int)
     fun getProgressWithId(id: Int) : Progress?
+    fun getSharedProgressWithUserId(id: Int) : List<List<Progress>>
     fun getProgressWithUserAndProgram(user: User, program: Program) : Progress?
     fun getProgressWithUserIdAndProgramId(userId: Int, programId: Int) : Progress?
     fun getProgressListWithUserId(userId: Int) : List<Progress>

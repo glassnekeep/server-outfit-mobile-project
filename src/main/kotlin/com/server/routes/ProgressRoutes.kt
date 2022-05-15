@@ -29,14 +29,26 @@ private fun Route.operateProgress(dao: Dao) {
                 call.respond(status = HttpStatusCode.OK, progress)
             } ?: call.respondText("Missing or invalid id", status = HttpStatusCode.BadRequest)
         }
-        get {
-            val user = call.request.queryParameters["user"]
+        get("user/{id}") {
+            //val user = call.request.queryParameters["user"]
+            val user = call.parameters["id"]
             user?.let {
                 val progressList = dao.getProgressListWithUserId(userId = user.toInt())
                 if (progressList.isNotEmpty()) {
                     call.respond(status = HttpStatusCode.OK, progressList)
                 } else {
                     call.respondText("No progress found", status = HttpStatusCode.NotFound)
+                }
+            } ?: call.respondText(text = "Invalid parameters", status = HttpStatusCode.BadRequest)
+        }
+        get("shared/{id}") {
+            val user = call.parameters["id"]
+            user?.let {
+                val shareProgressList = dao.getSharedProgressWithUserId(id = user.toInt())
+                if (shareProgressList.isNotEmpty()) {
+                    call.respond(status = HttpStatusCode.OK, shareProgressList)
+                } else {
+                    call.respondText(text = "No shared progress found", status = HttpStatusCode.NotFound)
                 }
             } ?: call.respondText(text = "Invalid parameters", status = HttpStatusCode.BadRequest)
         }

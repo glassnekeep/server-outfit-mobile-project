@@ -118,4 +118,10 @@ GET http://test:password@127.0.0.1:8080/static/ex10.png
 ###
 GET http://test:password@127.0.0.1:8080/progress?user=24
 
+###
+GET http://test:password@127.0.0.1:8080/progress/user/24
+
+###
+GET http://test:password@127.0.0.1:8080/progress/shared/23
+
 
