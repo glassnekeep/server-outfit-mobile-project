@@ -497,12 +497,13 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
         Unit
     }
 
-    override fun shareProgress(sharedProgress: SharedProgress) {
+    override fun shareProgress(sharedProgress: SharedProgress) = transaction(db) {
         SharedProgressTable.insert {
             it[SharedProgressTable.senderId] = sharedProgress.senderId
             it[SharedProgressTable.recipientId] = sharedProgress.recipientId
-            it[SharedProgressTable.time] = sharedProgress.time.toString()
+            it[SharedProgressTable.time] = sharedProgress.time
         }
+        Unit
     }
 
     override fun deleteProgress(id: Int) = transaction(db) {

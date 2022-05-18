@@ -52,7 +52,7 @@ object CalendarTable: IntIdTable("calendar") {
 
 object UserTable: IntIdTable("users") {
     //val id = integer("id").autoIncrement()
-    val username = varchar("username", 50)
+    val username = varchar("username", 50).uniqueIndex()
     val firstname = varchar("firstname", 50)
     val lastname = varchar("lastname", 50)
     val phoneNumber = varchar("phone_number", 30).uniqueIndex()

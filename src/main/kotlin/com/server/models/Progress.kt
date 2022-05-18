@@ -1,6 +1,5 @@
 package com.server.models
 import kotlinx.serialization.Serializable
-import java.util.*
 
 @Serializable
 data class Progress(
@@ -10,8 +9,9 @@ data class Progress(
     val currentExercise: Int
 )
 
+@Serializable
 data class SharedProgress(
     val senderId: Int,
     val recipientId: Int,
-    val time: Date
+    val time: String
 )
