@@ -18,7 +18,8 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
             ProgressTable,
             SettingsTable,
             ProgramToUserTable,
-            ExerciseToProgramTable
+                ExerciseToProgramTable,
+                SharedProgressTable
         ))
         /*SchemaUtils.create(UserTable)
         SchemaUtils.create(CalendarTable)
@@ -265,7 +266,8 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
                 it[ProgramTable.interval],
                 getExerciseListWithProgramId(it[ProgramTable.id].value),
                 getUserListWithProgramId(it[ProgramTable.id].value),
-                it[ProgramTable.image]
+                it[ProgramTable.image],
+                it[ProgramTable.numberOfExercises]
             )
         }.singleOrNull()
     }
@@ -349,7 +351,8 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
             row[ProgramTable.interval],
             getExerciseListWithProgramId(programId),
             getUserListWithProgramId(programId),
-            row[ProgramTable.image]
+            row[ProgramTable.image],
+            row[ProgramTable.numberOfExercises]
         )
     }
 
@@ -480,6 +483,29 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
         Unit
     }
 
+    override fun updateProgressWithUserIdAndProgramId(userId: Int, programId: Int) = transaction(db) {
+        getProgressWithUserIdAndProgramId(userId = userId, programId = programId)?.let { progress ->
+            if (progress.program.numberOfExercises > progress.currentExercise) {
+                updateProgress(
+                    id = progress.id,
+                    program = progress.program,
+                    user = progress.user,
+                    currentExercise = progress.currentExercise + 1
+                )
+            }
+        }
+        Unit
+    }
+
+    override fun shareProgress(sharedProgress: SharedProgress) = transaction(db) {
+        SharedProgressTable.insert {
+            it[SharedProgressTable.senderId] = sharedProgress.senderId
+            it[SharedProgressTable.recipientId] = sharedProgress.recipientId
+            it[SharedProgressTable.time] = sharedProgress.time
+        }
+        Unit
+    }
+
     override fun deleteProgress(id: Int) = transaction(db) {
         ProgressTable.deleteWhere { ProgressTable.id eq id }
         Unit
@@ -489,6 +515,12 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
         ProgressTable.select { ProgressTable.id eq id }.map {
             createProgressWihRow(it)
         }.singleOrNull()
+    }
+
+    override fun getSharedProgressWithUserId(id: Int): List<List<Progress>> = transaction(db) {
+        SharedProgressTable.select { SharedProgressTable.recipientId eq id }.map { sender ->
+            getProgressListWithUserId(sender[SharedProgressTable.senderId].value)
+        }
     }
 
     override fun getProgressWithUserAndProgram(user: User, program: Program): Progress? = transaction(db) {
@@ -501,6 +533,12 @@ class Dao(val db: Database) : BaseDaoInterface, UserDAOInterface, CalendarDAOInt
         ProgressTable.select { (ProgressTable.userId eq userId) and (ProgressTable.programId eq programId) }.map {
             createProgressWihRow(it)
         }.singleOrNull()
+    }
+
+    override fun getProgressListWithUserId(userId: Int) : List<Progress> = transaction(db) {
+        ProgressTable.select { ProgressTable.userId eq userId }.map {
+            createProgressWihRow(it)
+        }
     }
 
     override fun createSettings(user: User, restTime: Int, countDownTime: Int) = transaction(db) {

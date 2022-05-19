@@ -9,6 +9,7 @@ object ProgramTable: IntIdTable("programs") {
     val interval = integer("interval")
     val name = text("name")
     val image = text("image")
+    val numberOfExercises = integer("number_of_exercises")
     //TODO Тут скорее всего нужно определить связь между программой и пользователями/упражнениями через 2 промежуточные таблицы, для чего нужно определить первичные ключи
     //override val primaryKey: PrimaryKey = PrimaryKey(id, name = "ID")
 }
@@ -51,7 +52,7 @@ object CalendarTable: IntIdTable("calendar") {
 
 object UserTable: IntIdTable("users") {
     //val id = integer("id").autoIncrement()
-    val username = varchar("username", 50)
+    val username = varchar("username", 50).uniqueIndex()
     val firstname = varchar("firstname", 50)
     val lastname = varchar("lastname", 50)
     val phoneNumber = varchar("phone_number", 30).uniqueIndex()
@@ -72,4 +73,10 @@ object ExerciseToProgramTable: Table("exercise_to_program") {
 object ProgramToUserTable: Table("program_to_user") {
     val programId = reference("program_id", ProgramTable.id, onDelete = ReferenceOption.CASCADE)
     val userId = reference("user_id", UserTable.id, onDelete = ReferenceOption.CASCADE)
+}
+
+object SharedProgressTable: Table("shared_progress_table") {
+    val senderId = reference("sender_id", UserTable.id, onDelete = ReferenceOption.CASCADE)
+    val recipientId = reference("recipient_id", UserTable.id, onDelete = ReferenceOption.CASCADE)
+    val time = text("time")
 }

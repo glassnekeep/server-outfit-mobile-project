@@ -8,3 +8,10 @@ data class Progress(
     val user: User,
     val currentExercise: Int
 )
+
+@Serializable
+data class SharedProgress(
+    val senderId: Int,
+    val recipientId: Int,
+    val time: String
+)

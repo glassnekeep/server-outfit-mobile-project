@@ -8,6 +8,7 @@ data class Program(
     val interval: Int,
     val exercise: List<Exercise>,
     val users: List<User>,
-    val image: String
+    val image: String,
+    val numberOfExercises: Int
     //TODO подумать о том чтобы тут было максимальное число очков за данную программу
 )

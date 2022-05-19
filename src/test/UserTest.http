@@ -49,3 +49,89 @@ GET http://test:password@127.0.0.1:8080/user?username=test
 
 ###
 GET http://test:password@127.0.0.1:8080/user?id=23
+
+###
+GET http://test:password@127.0.0.1:8080/static/days_with_yoga.jpg
+
+###
+GET http://test:password@127.0.0.1:8080/static/kesheshi.jpg
+
+###
+GET http://test:password@127.0.0.1:8080/static/exercise_for_beginners.jpg
+
+###
+GET http://test:password@127.0.0.1:8080/static/scretch_for_you.jpg
+
+###
+GET http://test:password@127.0.0.1:8080/static/image.png
+
+###
+GET http://test:password@127.0.0.1:8080/static/scretch.png
+
+###
+GET http://test:password@127.0.0.1:8080/static/pic1.jpg
+
+###
+GET http://test:password@127.0.0.1:8080/static/pic2.jpg
+
+###
+GET http://test:password@127.0.0.1:8080/static/2290.jpg
+
+###
+GET http://test:password@127.0.0.1:8080/static/ph1.png
+###
+GET http://test:password@127.0.0.1:8080/static/ph2.png
+###
+GET http://test:password@127.0.0.1:8080/static/ph3.png
+###
+GET http://test:password@127.0.0.1:8080/static/ph4.png
+###
+GET http://test:password@127.0.0.1:8080/static/ph5.png
+###
+GET http://test:password@127.0.0.1:8080/static/ph6.png
+###
+GET http://test:password@127.0.0.1:8080/static/ph7.png
+###
+GET http://test:password@127.0.0.1:8080/static/ph8.png
+
+###
+GET http://test:password@127.0.0.1:8080/static/ex1.png
+###
+GET http://test:password@127.0.0.1:8080/static/ex2.png
+###
+GET http://test:password@127.0.0.1:8080/static/ex3.png
+###
+GET http://test:password@127.0.0.1:8080/static/ex4.png
+###
+GET http://test:password@127.0.0.1:8080/static/ex5.png
+###
+GET http://test:password@127.0.0.1:8080/static/ex6.png
+###
+GET http://test:password@127.0.0.1:8080/static/ex7.png
+###
+GET http://test:password@127.0.0.1:8080/static/ex8.png
+###
+GET http://test:password@127.0.0.1:8080/static/ex9.png
+###
+GET http://test:password@127.0.0.1:8080/static/ex10.png
+
+###
+GET http://test:password@127.0.0.1:8080/progress?user=24
+
+###
+GET http://test:password@127.0.0.1:8080/progress/user/24
+
+###
+GET http://test:password@127.0.0.1:8080/progress/shared/23
+
+###
+POST http://test:password@127.0.0.1:8080/progress/share
+Content-Type: application/json
+
+{
+  "senderId": 24,
+  "recipientId": 25,
+  "time": "18.05.2020 15:44:34"
+}
+
+
