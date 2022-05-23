@@ -12,10 +12,8 @@ fun main() {
     embeddedServer(Netty, port = System.getenv("PORT").toInt()) {
         val dao = Dao(
             Database.connect(
-            url = "jdbc:postgresql://localhost:5432/postgres",
-            driver = "org.postgresql.Driver",
-            user = "postgres",
-            password = com.server.plugins.password
+            url = "postgres://kctsqhltbshhfv:0bf6b42b3a2e2d334c47f14840d50e7b3d830b49d69502e14373e8304a633cd0@ec2-34-201-95-176.compute-1.amazonaws.com:5432/d7pgkl27o587ff",
+            driver = "org.postgresql.Driver"
         ))
         dao.init()
         configureSecurity(dao)
