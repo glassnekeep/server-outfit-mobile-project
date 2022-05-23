@@ -1,1 +1,0 @@
-web: build/install/server-outfit-mobile-project/bin/server-outfit-mobile-project
