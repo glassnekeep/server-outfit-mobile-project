@@ -13,7 +13,7 @@ fun main() {
         val dao = Dao(
             Database.connect(
                 url = System.getenv("DATABASE_URL"),
-                driver = "org.postgresql.Driver",
+                driver = System.getenv("JDBC_DRIVER")
             )
         )
         dao.init()
