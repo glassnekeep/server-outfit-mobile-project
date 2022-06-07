@@ -10,7 +10,7 @@ plugins {
 }
 
 tasks {
-    create("stage").dependsOn("installDist", "build")
+    create("stage").dependsOn("installDist")
 }
 
 group = "com.server"
